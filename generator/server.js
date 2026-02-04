@@ -207,7 +207,7 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// Start server
+// Start server (for local development)
 async function start() {
   await ensureDataDir();
 
@@ -217,4 +217,10 @@ async function start() {
   });
 }
 
-start().catch(console.error);
+// Only start server if not in serverless environment (Vercel)
+if (process.env.VERCEL !== '1') {
+  start().catch(console.error);
+}
+
+// Export for Vercel serverless functions
+export default app;
