@@ -1,14 +1,13 @@
-// Note: Vercel serverless functions are stateless, so file-based storage doesn't persist.
+// Note: Vercel serverless functions are stateless, so in-memory storage resets.
 // For production, use Vercel KV, Supabase, or another database.
-// For now, version history is handled client-side via localStorage.
+// The app also stores versions in localStorage as backup.
 
-const memoryStore = new Map();
+// Simple in-memory store (resets on cold starts)
+const memoryStore = globalThis.__historyStore || (globalThis.__historyStore = new Map());
 
 export default async function handler(req, res) {
   const { method } = req;
-
-  // Extract clientId from query or body
-  const clientId = req.query.clientId || req.body?.clientId;
+  const { clientId, versionId } = req.query;
 
   if (!clientId) {
     return res.status(400).json({ error: 'clientId is required' });
@@ -19,8 +18,17 @@ export default async function handler(req, res) {
 
   switch (method) {
     case 'GET': {
-      // Get history for client
+      // Get history for client (or specific version if versionId provided)
       const history = memoryStore.get(sanitizedId) || { clientId: sanitizedId, versions: [] };
+
+      if (versionId) {
+        const version = history.versions.find(v => v.id === versionId);
+        if (!version) {
+          return res.status(404).json({ error: 'Version not found' });
+        }
+        return res.json(version);
+      }
+
       return res.json(history);
     }
 
@@ -50,9 +58,8 @@ export default async function handler(req, res) {
 
     case 'DELETE': {
       // Delete version
-      const versionId = req.query.versionId;
       if (!versionId) {
-        return res.status(400).json({ error: 'versionId is required' });
+        return res.status(400).json({ error: 'versionId is required for DELETE' });
       }
 
       const history = memoryStore.get(sanitizedId);

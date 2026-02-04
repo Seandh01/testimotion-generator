@@ -2,12 +2,6 @@
   "buildCommand": "",
   "outputDirectory": ".",
   "framework": null,
-  "rewrites": [
-    { "source": "/api/health", "destination": "/api/health.js" },
-    { "source": "/api/extract-brand", "destination": "/api/extract-brand.js" },
-    { "source": "/api/generate-copy", "destination": "/api/generate-copy.js" },
-    { "source": "/api/history", "destination": "/api/history.js" }
-  ],
   "headers": [
     {
       "source": "/(.*)",
