@@ -63,7 +63,7 @@ app.post('/api/extract-brand', async (req, res) => {
 
     // Use Gemini to analyze and extract brand info
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
     const prompt = `Analyze this website HTML and extract brand colors. Return JSON only:
     {
@@ -145,7 +145,7 @@ app.post('/api/generate-copy', async (req, res) => {
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
     const langName = language === 'nl' ? 'Dutch' : 'English';
 
