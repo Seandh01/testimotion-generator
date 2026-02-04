@@ -58,7 +58,7 @@ export default async function handler(req, res) {
 
     // Use Gemini to analyze and extract brand info
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash-001' });
 
     const prompt = `Analyze this website HTML and extract brand colors. Return JSON only:
     {
