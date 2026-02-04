@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TESTIMOTION Preview</title>
+  <style>
+    :root {
+      --bg-primary: #000000;
+      --bg-secondary: #0a0a0a;
+      --bg-card: #111111;
+      --text-primary: #ffffff;
+      --text-secondary: #888888;
+      --accent: #ffffff;
+      --border: #333333;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Viewport Controls Toolbar */
+    .viewport-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 24px;
+      background: var(--bg-card);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .toolbar-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .viewport-buttons {
+      display: flex;
+      gap: 4px;
+      background: var(--bg-secondary);
+      padding: 4px;
+      border-radius: 8px;
+    }
+
+    .viewport-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      background: transparent;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .viewport-btn:hover {
+      color: var(--text-primary);
+      background: var(--bg-card);
+    }
+
+    .viewport-btn.active {
+      color: var(--bg-primary);
+      background: var(--accent);
+    }
+
+    .viewport-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .viewport-size {
+      font-size: 12px;
+      color: var(--text-secondary);
+      padding: 4px 12px;
+      background: var(--bg-secondary);
+      border-radius: 4px;
+    }
+
+    /* Preview Container */
+    .preview-container {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      padding: 24px;
+      background: var(--bg-secondary);
+      overflow: auto;
+    }
+
+    .preview-frame-wrapper {
+      background: #fff;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+      transition: width 0.3s ease, max-width 0.3s ease;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    /* Viewport Sizes */
+    .preview-frame-wrapper.desktop {
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .preview-frame-wrapper.tablet {
+      width: 768px;
+      max-width: 768px;
+    }
+
+    .preview-frame-wrapper.mobile {
+      width: 375px;
+      max-width: 375px;
+    }
+
+    #preview-frame {
+      width: 100%;
+      height: calc(100vh - 100px);
+      border: none;
+      display: block;
+    }
+
+    /* Connection Status */
+    .connection-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-secondary);
+    }
+
+    .status-dot.connected {
+      background: #22c55e;
+    }
+
+    .status-dot.disconnected {
+      background: #ef4444;
+    }
+
+    /* Loading State */
+    .loading-overlay {
+      position: absolute;
+      inset: 0;
+      background: var(--bg-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .loading-overlay.hidden {
+      display: none;
+    }
+
+    .loading-text {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .viewport-toolbar {
+        flex-direction: column;
+        gap: 12px;
+        padding: 12px 16px;
+      }
+
+      .toolbar-left {
+        width: 100%;
+        justify-content: space-between;
+      }
+
+      .viewport-btn span {
+        display: none;
+      }
+
+      .preview-container {
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Viewport Controls Toolbar -->
+  <header class="viewport-toolbar">
+    <div class="toolbar-left">
+      <span class="toolbar-title">TESTIMOTION Preview</span>
+      <div class="viewport-buttons">
+        <button class="viewport-btn active" data-viewport="desktop" title="Desktop">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2"/>
+            <line x1="8" y1="21" x2="16" y2="21"/>
+            <line x1="12" y1="17" x2="12" y2="21"/>
+          </svg>
+          <span>Desktop</span>
+        </button>
+        <button class="viewport-btn" data-viewport="tablet" title="Tablet">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="4" y="2" width="16" height="20" rx="2"/>
+            <line x1="12" y1="18" x2="12" y2="18"/>
+          </svg>
+          <span>Tablet</span>
+        </button>
+        <button class="viewport-btn" data-viewport="mobile" title="Mobile">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="5" y="2" width="14" height="20" rx="2"/>
+            <line x1="12" y1="18" x2="12" y2="18"/>
+          </svg>
+          <span>Mobile</span>
+        </button>
+      </div>
+    </div>
+    <div class="toolbar-right">
+      <span class="viewport-size" id="viewport-size">100%</span>
+      <div class="connection-status">
+        <span class="status-dot" id="status-dot"></span>
+        <span id="status-text">Connecting...</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Preview Container -->
+  <main class="preview-container">
+    <div class="preview-frame-wrapper desktop" id="frame-wrapper">
+      <iframe id="preview-frame" title="Preview"></iframe>
+    </div>
+    <div class="loading-overlay" id="loading-overlay">
+      <div class="loading-text">Waiting for content from editor...</div>
+    </div>
+  </main>
+
+  <script>
+    const frameWrapper = document.getElementById('frame-wrapper');
+    const previewFrame = document.getElementById('preview-frame');
+    const loadingOverlay = document.getElementById('loading-overlay');
+    const statusDot = document.getElementById('status-dot');
+    const statusText = document.getElementById('status-text');
+    const viewportSizeEl = document.getElementById('viewport-size');
+
+    const viewportSizes = {
+      desktop: '100%',
+      tablet: '768px',
+      mobile: '375px'
+    };
+
+    let currentViewport = 'desktop';
+    let isConnected = false;
+
+    // Handle viewport button clicks
+    document.querySelectorAll('.viewport-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const viewport = btn.dataset.viewport;
+        setViewport(viewport);
+      });
+    });
+
+    function setViewport(viewport) {
+      currentViewport = viewport;
+
+      // Update button states
+      document.querySelectorAll('.viewport-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.viewport === viewport);
+      });
+
+      // Update frame wrapper class
+      frameWrapper.className = `preview-frame-wrapper ${viewport}`;
+
+      // Update size display
+      viewportSizeEl.textContent = viewportSizes[viewport];
+    }
+
+    // Update connection status
+    function updateStatus(connected) {
+      isConnected = connected;
+      statusDot.classList.toggle('connected', connected);
+      statusDot.classList.toggle('disconnected', !connected);
+      statusText.textContent = connected ? 'Connected' : 'Disconnected';
+    }
+
+    // Write HTML to iframe
+    function writeToFrame(html) {
+      const doc = previewFrame.contentDocument || previewFrame.contentWindow.document;
+      doc.open();
+      doc.write(html);
+      doc.close();
+      loadingOverlay.classList.add('hidden');
+    }
+
+    // Listen for messages from parent window
+    window.addEventListener('message', (event) => {
+      // Validate origin if needed (for security in production)
+      if (event.data && event.data.type === 'update') {
+        writeToFrame(event.data.html);
+        updateStatus(true);
+      } else if (event.data && event.data.type === 'ping') {
+        // Respond to ping to confirm connection
+        if (window.opener) {
+          window.opener.postMessage({ type: 'pong' }, '*');
+        }
+      }
+    });
+
+    // Notify opener that we're ready
+    if (window.opener) {
+      window.opener.postMessage({ type: 'preview-ready' }, '*');
+      updateStatus(true);
+    } else {
+      updateStatus(false);
+    }
+
+    // Check connection periodically
+    setInterval(() => {
+      if (window.opener && !window.opener.closed) {
+        if (!isConnected) {
+          window.opener.postMessage({ type: 'preview-ready' }, '*');
+        }
+      } else {
+        updateStatus(false);
+      }
+    }, 2000);
+  </script>
+</body>
+</html>

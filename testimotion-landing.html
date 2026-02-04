@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TESTIMOTION - Laat klanten je sales doen</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --brand-primary: {{ custom_values.brand_primary_color | default: '#ffcc03' }};
+      --brand-secondary: {{ custom_values.brand_secondary_color | default: '#0b9a9a' }};
+      --bg-gradient-start: {{ custom_values.bg_gradient_start | default: '#0a2e1f' }};
+      --bg-gradient-end: {{ custom_values.bg_gradient_end | default: '#030a07' }};
+    }
+
+    .brand-primary { color: var(--brand-primary); }
+    .bg-brand-primary { background-color: var(--brand-primary); }
+    .border-brand-primary { border-color: var(--brand-primary); }
+    .brand-secondary { color: var(--brand-secondary); }
+    .bg-brand-secondary { background-color: var(--brand-secondary); }
+
+    .bg-gradient-dark {
+      background: linear-gradient(180deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+    }
+
+    .star-rating {
+      color: var(--brand-primary);
+    }
+
+    .play-button {
+      width: 80px;
+      height: 80px;
+      background-color: var(--brand-primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.2s ease;
+      box-shadow: 0 0 30px rgba(255, 204, 3, 0.4);
+    }
+
+    .play-button:hover {
+      transform: scale(1.1);
+    }
+
+    .play-button svg {
+      width: 32px;
+      height: 32px;
+      margin-left: 4px;
+    }
+
+    /* Video frame with glowing effect */
+    .video-frame {
+      border-radius: 16px;
+      box-shadow:
+        0 0 60px rgba(255, 255, 255, 0.15),
+        0 0 100px rgba(255, 255, 255, 0.1),
+        0 0 140px rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      overflow: hidden;
+      background: #000;
+    }
+
+    .step-number {
+      width: 48px;
+      height: 48px;
+      background-color: var(--brand-primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.25rem;
+      color: #000;
+    }
+
+    .google-review-card {
+      background: white;
+      border-radius: 16px;
+      padding: 24px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .floating-testimonial {
+      display: none; /* Hidden by default to prevent overlap */
+    }
+
+    @media (min-width: 1280px) {
+      .floating-testimonial.show {
+        display: block;
+        position: absolute;
+        right: -280px;
+        top: 50%;
+        transform: translateY(-50%);
+        max-width: 300px;
+        z-index: 10;
+      }
+    }
+  </style>
+</head>
+<body class="bg-gradient-dark min-h-screen">
+
+  <!-- ================================================== -->
+  <!-- SECTION 1: HERO -->
+  <!-- ================================================== -->
+  <section class="relative overflow-hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16">
+
+      <!-- Logo - Responsive sizing -->
+      <div class="flex justify-center mb-10" data-ghl-container>
+        <img
+          src="{{ custom_values.logo_url }}"
+          alt="TESTIMOTION Logo"
+          class="h-10 md:h-14 lg:h-16"
+          data-ghl-token="logo_url"
+        >
+      </div>
+
+      <!-- Mini Testimonials Row - NO IMAGES, just stars + quoted text -->
+      <div class="flex flex-wrap justify-center items-center gap-4 md:gap-8 mb-10">
+        <div class="flex items-center gap-2">
+          <span class="star-rating text-lg">★★★★★</span>
+          <span class="text-white text-sm">"{{ custom_values.mini_testimonial_1 | default: 'Eindelijk een systeem dat werkt!' }}"</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="star-rating text-lg">★★★★★</span>
+          <span class="text-white text-sm">"{{ custom_values.mini_testimonial_2 | default: 'Onze omzet is verdubbeld.' }}"</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="star-rating text-lg">★★★★★</span>
+          <span class="text-white text-sm">"{{ custom_values.mini_testimonial_3 | default: 'Beste investering dit jaar.' }}"</span>
+        </div>
+      </div>
+
+      <!-- Hero Headline -->
+      <div class="text-center max-w-4xl mx-auto mb-8">
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6">
+          {{ custom_values.hero_headline | default: 'Laat klanten je sales doen.' }}
+        </h1>
+        <p class="text-lg md:text-xl text-white/80 mb-8">
+          {{ custom_values.hero_subheadline | default: 'Met ons bewezen systeem verzamelen, structureren en presenteren wij klantverhalen die vertrouwen wekken en conversies verhogen.' }}
+        </p>
+      </div>
+
+      <!-- CTA Button + Trust Badges on SAME LINE -->
+      <div class="flex flex-col md:flex-row items-center justify-center gap-6 mb-12">
+        <!-- CTA Button -->
+        <a
+          href="{{ custom_values.cta_button_url | default: '#form' }}"
+          class="inline-block bg-brand-primary text-black font-bold text-lg px-8 py-4 rounded-full hover:opacity-90 transition-opacity"
+        >
+          {{ custom_values.cta_button_text | default: 'Ik wil dit systeem' }}
+        </a>
+
+        <!-- Trust Badges -->
+        <div class="flex items-center gap-3">
+          <div class="flex -space-x-3">
+            <img src="{{ custom_values.trust_badge_photo_1 }}" alt="" class="w-10 h-10 rounded-full border-2 border-white/20 object-cover">
+            <img src="{{ custom_values.trust_badge_photo_2 }}" alt="" class="w-10 h-10 rounded-full border-2 border-white/20 object-cover">
+            <img src="{{ custom_values.trust_badge_photo_3 }}" alt="" class="w-10 h-10 rounded-full border-2 border-white/20 object-cover">
+            <img src="{{ custom_values.trust_badge_photo_4 }}" alt="" class="w-10 h-10 rounded-full border-2 border-white/20 object-cover">
+            <img src="{{ custom_values.trust_badge_photo_5 }}" alt="" class="w-10 h-10 rounded-full border-2 border-white/20 object-cover">
+          </div>
+          <p class="text-white/60 text-sm">
+            Vertrouwd door <span class="text-white font-semibold">{{ custom_values.trust_badge_count | default: '35+' }}</span> ondernemers
+          </p>
+        </div>
+      </div>
+
+      <!-- Video with Glowing Frame -->
+      <div class="max-w-4xl mx-auto mb-12">
+        <div class="video-frame aspect-video relative">
+          <iframe
+            src="{{ custom_values.vimeo_embed_url }}"
+            class="w-full h-full"
+            frameborder="0"
+            allow="autoplay; fullscreen; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+        </div>
+      </div>
+
+      <!-- Client Logos Row -->
+      <div class="flex flex-wrap justify-center items-center gap-8 md:gap-12 pt-4">
+        <span data-ghl-container><img src="{{ custom_values.client_logo_1 }}" alt="Client Logo" class="h-8 md:h-10 lg:h-12 opacity-70" data-ghl-token="client_logo_1"></span>
+        <span data-ghl-container><img src="{{ custom_values.client_logo_2 }}" alt="Client Logo" class="h-8 md:h-10 lg:h-12 opacity-70" data-ghl-token="client_logo_2"></span>
+        <span data-ghl-container><img src="{{ custom_values.client_logo_3 }}" alt="Client Logo" class="h-8 md:h-10 lg:h-12 opacity-70" data-ghl-token="client_logo_3"></span>
+        <span data-ghl-container><img src="{{ custom_values.client_logo_4 }}" alt="Client Logo" class="h-8 md:h-10 lg:h-12 opacity-70" data-ghl-token="client_logo_4"></span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================================================== -->
+  <!-- SECTION 2: PROCESS STEPS -->
+  <!-- ================================================== -->
+  <section class="py-16 md:py-24 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <!-- Section Headline -->
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
+          {{ custom_values.process_headline | default: 'Hoe wij in 4 stappen klantverhalen omzetten naar omzet' }}
+        </h2>
+      </div>
+
+      <div class="relative">
+
+        <!-- Process Steps Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
+
+          <!-- Step 1: Proof Capture -->
+          <div class="bg-white rounded-2xl p-6 relative">
+            <div class="step-number absolute -top-4 -left-4">1</div>
+            <div class="mb-4 rounded-xl overflow-hidden">
+              <img
+                src="{{ custom_values.step_image_1 }}"
+                alt="Proof Capture"
+                class="w-full h-48 object-cover"
+              >
+            </div>
+            <h3 class="text-xl font-bold text-black mb-2">
+              {{ custom_values.step_1_title | default: 'Proof Capture' }}
+            </h3>
+            <p class="text-gray-600 text-sm">
+              {{ custom_values.step_1_description | default: 'Wij verzamelen authentieke klantervaringen via gestructureerde interviews en video-opnames.' }}
+            </p>
+          </div>
+
+          <!-- Step 2: Proof Story Build -->
+          <div class="bg-white rounded-2xl p-6 relative">
+            <div class="step-number absolute -top-4 -left-4">2</div>
+            <div class="mb-4 rounded-xl overflow-hidden">
+              <img
+                src="{{ custom_values.step_image_2 }}"
+                alt="Proof Story Build"
+                class="w-full h-48 object-cover"
+              >
+            </div>
+            <h3 class="text-xl font-bold text-black mb-2">
+              {{ custom_values.step_2_title | default: 'Proof Story Build' }}
+            </h3>
+            <p class="text-gray-600 text-sm">
+              {{ custom_values.step_2_description | default: 'We structureren de verhalen tot overtuigende cases met duidelijke resultaten en emotie.' }}
+            </p>
+          </div>
+
+          <!-- Step 3: Proof Page -->
+          <div class="bg-white rounded-2xl p-6 relative">
+            <div class="step-number absolute -top-4 -left-4">3</div>
+            <div class="mb-4 rounded-xl overflow-hidden">
+              <img
+                src="{{ custom_values.step_image_3 }}"
+                alt="Proof Page"
+                class="w-full h-48 object-cover"
+              >
+            </div>
+            <h3 class="text-xl font-bold text-black mb-2">
+              {{ custom_values.step_3_title | default: 'Proof Page' }}
+            </h3>
+            <p class="text-gray-600 text-sm">
+              {{ custom_values.step_3_description | default: 'Alles komt samen op een krachtige landingspagina die bezoekers omzet in klanten.' }}
+            </p>
+          </div>
+
+        </div>
+
+        <!-- Floating Testimonial Card (hidden by default to prevent overlap) -->
+        <div class="floating-testimonial">
+          <div class="bg-white rounded-2xl p-6 shadow-xl">
+            <div class="flex items-center gap-4 mb-4">
+              <img
+                src="{{ custom_values.testimonial_photo_4 }}"
+                alt="{{ custom_values.testimonial_name }}"
+                class="w-16 h-16 rounded-full object-cover"
+              >
+              <div>
+                <p class="font-bold text-black">{{ custom_values.testimonial_name | default: 'Jan Willem Addink' }}</p>
+                <p class="text-gray-500 text-sm">{{ custom_values.testimonial_company | default: 'Olmia Robotics' }}</p>
+              </div>
+            </div>
+            <p class="text-gray-700 italic">
+              "{{ custom_values.testimonial_quote | default: 'Door TESTIMOTION hebben we nu een constante stroom van leads die al overtuigd zijn voordat ze contact opnemen.' }}"
+            </p>
+            <div class="star-rating mt-3">★★★★★</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- CTA Button: "Laat klanten ook mijn sales doen" -->
+      <div class="text-center mt-16">
+        <a
+          href="{{ custom_values.cta_button_url | default: '#form' }}"
+          class="inline-block bg-brand-primary text-black font-bold text-lg px-8 py-4 rounded-full hover:opacity-90 transition-opacity mb-4"
+        >
+          {{ custom_values.cta_button_secondary_text | default: 'Laat klanten ook mijn sales doen' }}
+        </a>
+        <p class="text-white/60 text-sm">
+          {{ custom_values.guarantee_text | default: '100% tevredenheidsgarantie - Geen resultaat? Geld terug.' }}
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================================================== -->
+  <!-- SECTION 3: REVIEWS -->
+  <!-- ================================================== -->
+  <section class="py-16 md:py-24 bg-white/5">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+      <!-- Trust Header -->
+      <div class="flex items-center justify-center gap-4 mb-12">
+        <div class="flex -space-x-2">
+          <img src="{{ custom_values.trust_badge_photo_1 }}" alt="" class="w-8 h-8 rounded-full border-2 border-white object-cover">
+          <img src="{{ custom_values.trust_badge_photo_2 }}" alt="" class="w-8 h-8 rounded-full border-2 border-white object-cover">
+          <img src="{{ custom_values.trust_badge_photo_3 }}" alt="" class="w-8 h-8 rounded-full border-2 border-white object-cover">
+        </div>
+        <p class="text-white">
+          Vertrouwd door <span class="font-bold">{{ custom_values.trust_badge_count | default: '35+' }}</span> ondernemers
+        </p>
+      </div>
+
+      <!-- Google Review Cards Grid (3x2 layout) -->
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
+
+        <!-- Review 1 -->
+        <div class="google-review-card" data-ghl-container>
+          <div class="flex items-center gap-3 mb-4">
+            <img
+              src="{{ custom_values.review_avatar_1 }}"
+              alt="Reviewer"
+              class="w-12 h-12 rounded-full object-cover"
+              data-ghl-token="review_avatar_1"
+            >
+            <div>
+              <p class="font-bold text-black">{{ custom_values.review_name_1 | default: 'Peter de Vries' }}</p>
+              <div class="flex items-center gap-2">
+                <img src="https://www.google.com/favicon.ico" alt="Google" class="w-4 h-4">
+                <span class="star-rating text-sm">★★★★★</span>
+              </div>
+            </div>
+          </div>
+          <p class="text-gray-700">
+            "{{ custom_values.review_text_1 | default: 'Professionele aanpak en geweldig resultaat. Onze testimonial pagina converteert nu 3x beter.' }}"
+          </p>
+        </div>
+
+        <!-- Review 2 -->
+        <div class="google-review-card" data-ghl-container>
+          <div class="flex items-center gap-3 mb-4">
+            <img
+              src="{{ custom_values.review_avatar_2 }}"
+              alt="Reviewer"
+              class="w-12 h-12 rounded-full object-cover"
+              data-ghl-token="review_avatar_2"
+            >
+            <div>
+              <p class="font-bold text-black">{{ custom_values.review_name_2 | default: 'Maria Jansen' }}</p>
+              <div class="flex items-center gap-2">
+                <img src="https://www.google.com/favicon.ico" alt="Google" class="w-4 h-4">
+                <span class="star-rating text-sm">★★★★★</span>
+              </div>
+            </div>
+          </div>
+          <p class="text-gray-700">
+            "{{ custom_values.review_text_2 | default: 'Eindelijk een partij die snapt hoe je klantverhalen moet inzetten. Absolute aanrader!' }}"
+          </p>
+        </div>
+
+        <!-- Review 3 -->
+        <div class="google-review-card" data-ghl-container>
+          <div class="flex items-center gap-3 mb-4">
+            <img
+              src="{{ custom_values.review_avatar_3 }}"
+              alt="Reviewer"
+              class="w-12 h-12 rounded-full object-cover"
+              data-ghl-token="review_avatar_3"
+            >
+            <div>
+              <p class="font-bold text-black">{{ custom_values.review_name_3 | default: 'Thomas van Dijk' }}</p>
+              <div class="flex items-center gap-2">
+                <img src="https://www.google.com/favicon.ico" alt="Google" class="w-4 h-4">
+                <span class="star-rating text-sm">★★★★★</span>
+              </div>
+            </div>
+          </div>
+          <p class="text-gray-700">
+            "{{ custom_values.review_text_3 | default: 'ROI binnen 2 maanden terugverdiend. De video testimonials maken echt het verschil.' }}"
+          </p>
+        </div>
+
+        <!-- Review 4 -->
+        <div class="google-review-card" data-ghl-container>
+          <div class="flex items-center gap-3 mb-4">
+            <img
+              src="{{ custom_values.review_avatar_4 }}"
+              alt="Reviewer"
+              class="w-12 h-12 rounded-full object-cover"
+              data-ghl-token="review_avatar_4"
+            >
+            <div>
+              <p class="font-bold text-black">{{ custom_values.review_name_4 | default: 'Lisa van den Berg' }}</p>
+              <div class="flex items-center gap-2">
+                <img src="https://www.google.com/favicon.ico" alt="Google" class="w-4 h-4">
+                <span class="star-rating text-sm">★★★★★</span>
+              </div>
+            </div>
+          </div>
+          <p class="text-gray-700">
+            "{{ custom_values.review_text_4 | default: 'Super tevreden met het resultaat. Klanten komen nu al overtuigd bij ons binnen.' }}"
+          </p>
+        </div>
+
+        <!-- Review 5 -->
+        <div class="google-review-card" data-ghl-container>
+          <div class="flex items-center gap-3 mb-4">
+            <img
+              src="{{ custom_values.review_avatar_5 }}"
+              alt="Reviewer"
+              class="w-12 h-12 rounded-full object-cover"
+              data-ghl-token="review_avatar_5"
+            >
+            <div>
+              <p class="font-bold text-black">{{ custom_values.review_name_5 | default: 'Jan Willem Addink' }}</p>
+              <div class="flex items-center gap-2">
+                <img src="https://www.google.com/favicon.ico" alt="Google" class="w-4 h-4">
+                <span class="star-rating text-sm">★★★★★</span>
+              </div>
+            </div>
+          </div>
+          <p class="text-gray-700">
+            "{{ custom_values.review_text_5 | default: 'Door TESTIMOTION hebben we nu een constante stroom van leads die al overtuigd zijn.' }}"
+          </p>
+        </div>
+
+        <!-- Review 6 -->
+        <div class="google-review-card" data-ghl-container>
+          <div class="flex items-center gap-3 mb-4">
+            <img
+              src="{{ custom_values.review_avatar_6 }}"
+              alt="Reviewer"
+              class="w-12 h-12 rounded-full object-cover"
+              data-ghl-token="review_avatar_6"
+            >
+            <div>
+              <p class="font-bold text-black">{{ custom_values.review_name_6 | default: 'Erik Bakker' }}</p>
+              <div class="flex items-center gap-2">
+                <img src="https://www.google.com/favicon.ico" alt="Google" class="w-4 h-4">
+                <span class="star-rating text-sm">★★★★★</span>
+              </div>
+            </div>
+          </div>
+          <p class="text-gray-700">
+            "{{ custom_values.review_text_6 | default: 'Fantastische kwaliteit video\'s en de hele workflow was super smooth.' }}"
+          </p>
+        </div>
+
+      </div>
+
+      <!-- Video Testimonials Section -->
+      <div class="text-center mb-12">
+        <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">
+          {{ custom_values.reviews_headline | default: 'Dit zeggen onze klanten over het systeem' }}
+        </h2>
+        <p class="text-white/60">
+          {{ custom_values.reviews_subheadline | default: 'Bekijk de video testimonials van ondernemers die je voorgingen' }}
+        </p>
+      </div>
+
+      <!-- Video Testimonial Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <!-- Video Testimonial 1 -->
+        <div class="relative rounded-2xl overflow-hidden group cursor-pointer" data-ghl-container>
+          <img
+            src="{{ custom_values.video_testimonial_thumb_1 }}"
+            alt="Video Testimonial"
+            class="w-full aspect-video object-cover"
+            data-ghl-token="video_testimonial_thumb_1"
+          >
+          <div class="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/50 transition-colors">
+            <div class="play-button">
+              <svg viewBox="0 0 24 24" fill="black">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </div>
+          </div>
+          <div class="absolute bottom-4 left-4 text-white">
+            <p class="font-bold">{{ custom_values.video_testimonial_name_1 | default: 'Erik Bakker' }}</p>
+            <p class="text-sm text-white/80">{{ custom_values.video_testimonial_company_1 | default: 'Digital Agency' }}</p>
+          </div>
+        </div>
+
+        <!-- Video Testimonial 2 -->
+        <div class="relative rounded-2xl overflow-hidden group cursor-pointer" data-ghl-container>
+          <img
+            src="{{ custom_values.video_testimonial_thumb_2 }}"
+            alt="Video Testimonial"
+            class="w-full aspect-video object-cover"
+            data-ghl-token="video_testimonial_thumb_2"
+          >
+          <div class="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/50 transition-colors">
+            <div class="play-button">
+              <svg viewBox="0 0 24 24" fill="black">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </div>
+          </div>
+          <div class="absolute bottom-4 left-4 text-white">
+            <p class="font-bold">{{ custom_values.video_testimonial_name_2 | default: 'Sandra Mulder' }}</p>
+            <p class="text-sm text-white/80">{{ custom_values.video_testimonial_company_2 | default: 'Coaching Practice' }}</p>
+          </div>
+        </div>
+
+        <!-- Video Testimonial 3 -->
+        <div class="relative rounded-2xl overflow-hidden group cursor-pointer" data-ghl-container>
+          <img
+            src="{{ custom_values.video_testimonial_thumb_3 }}"
+            alt="Video Testimonial"
+            class="w-full aspect-video object-cover"
+            data-ghl-token="video_testimonial_thumb_3"
+          >
+          <div class="absolute inset-0 bg-black/30 flex items-center justify-center group-hover:bg-black/50 transition-colors">
+            <div class="play-button">
+              <svg viewBox="0 0 24 24" fill="black">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </div>
+          </div>
+          <div class="absolute bottom-4 left-4 text-white">
+            <p class="font-bold">{{ custom_values.video_testimonial_name_3 | default: 'Mark Hendriks' }}</p>
+            <p class="text-sm text-white/80">{{ custom_values.video_testimonial_company_3 | default: 'SaaS Company' }}</p>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================================================== -->
+  <!-- SECTION 4: FOOTER CTA + FORM -->
+  <!-- ================================================== -->
+  <section id="form" class="py-16 md:py-24">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+
+      <!-- Final Headline -->
+      <h2 class="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-6">
+        {{ custom_values.footer_headline | default: 'Klaar om je klanten voor je te laten verkopen?' }}
+      </h2>
+
+      <p class="text-white/80 text-lg mb-8">
+        {{ custom_values.footer_subheadline | default: 'Plan een vrijblijvend gesprek en ontdek hoe wij jouw klantverhalen omzetten in een conversiemachine.' }}
+      </p>
+
+      <!-- Trust Badges -->
+      <div class="flex flex-col items-center gap-4 mb-8">
+        <div class="flex -space-x-3">
+          <img src="{{ custom_values.trust_badge_photo_1 }}" alt="" class="w-10 h-10 rounded-full border-2 border-white/20 object-cover">
+          <img src="{{ custom_values.trust_badge_photo_2 }}" alt="" class="w-10 h-10 rounded-full border-2 border-white/20 object-cover">
+          <img src="{{ custom_values.trust_badge_photo_3 }}" alt="" class="w-10 h-10 rounded-full border-2 border-white/20 object-cover">
+          <img src="{{ custom_values.trust_badge_photo_4 }}" alt="" class="w-10 h-10 rounded-full border-2 border-white/20 object-cover">
+          <img src="{{ custom_values.trust_badge_photo_5 }}" alt="" class="w-10 h-10 rounded-full border-2 border-white/20 object-cover">
+        </div>
+        <p class="text-white/60 text-sm">
+          Vertrouwd door <span class="text-white font-semibold">{{ custom_values.trust_badge_count | default: '35+' }}</span> ondernemers
+        </p>
+      </div>
+
+      <!-- Form Container (only form location on the page) -->
+      <div class="w-full max-w-md mx-auto p-6 bg-white/10 backdrop-blur rounded-2xl border border-white/10">
+        <!-- GHL_FORM_EMBED: Drag and drop a GHL form element here in the builder -->
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ================================================== -->
+  <!-- FOOTER -->
+  <!-- ================================================== -->
+  <footer class="py-8 border-t border-white/10">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+        <img
+          src="{{ custom_values.logo_url }}"
+          alt="TESTIMOTION Logo"
+          class="h-8"
+        >
+        <p class="text-white/40 text-sm">
+          © {{ custom_values.current_year | default: '2025' }} TESTIMOTION. Alle rechten voorbehouden.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ================================================== -->
+  <!-- CONDITIONAL HIDING JAVASCRIPT -->
+  <!-- ================================================== -->
+  <script>
+    /**
+     * Conditional Hiding for GHL Custom Values
+     *
+     * This script checks all elements with data-ghl-token attributes.
+     * If the image src contains unresolved {{ tokens }} or is empty,
+     * the parent container (data-ghl-container) is hidden.
+     *
+     * This prevents broken image icons and empty content blocks
+     * when Custom Values are not filled in for a specific client.
+     */
+    document.addEventListener('DOMContentLoaded', function() {
+      // Find all elements with data-ghl-token attribute
+      const tokenElements = document.querySelectorAll('[data-ghl-token]');
+
+      tokenElements.forEach(function(el) {
+        const src = el.getAttribute('src') || el.textContent || '';
+        const tokenName = el.getAttribute('data-ghl-token');
+
+        // Check if the value is empty, contains unresolved tokens, or is a placeholder
+        const isEmpty = !src ||
+                       src.trim() === '' ||
+                       src.includes('{{') ||
+                       src.includes('}}') ||
+                       src.includes('custom_values.');
+
+        if (isEmpty) {
+          // Find the parent container and hide it
+          const container = el.closest('[data-ghl-container]');
+          if (container) {
+            container.style.display = 'none';
+          } else {
+            // If no container, hide the element itself
+            el.style.display = 'none';
+          }
+        }
+      });
+    });
+
+    /**
+     * Image Error Fallback Handler
+     *
+     * If an image fails to load (404, broken URL, etc.),
+     * this handler hides the container to prevent broken image icons.
+     */
+    document.querySelectorAll('img[data-ghl-token]').forEach(function(img) {
+      img.addEventListener('error', function() {
+        const container = this.closest('[data-ghl-container]');
+        if (container) {
+          container.style.display = 'none';
+        } else {
+          this.style.display = 'none';
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

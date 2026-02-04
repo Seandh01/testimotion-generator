@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+generator/node_modules/
+generator/functions/node_modules/
+
+# Environment variables
+.env
+generator/.env
+
+# Test artifacts
+test-results/
+playwright-report/
+playwright/.cache/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Build outputs
+dist/
+build/
+
+# Local data storage
+generator/data/
+
+# Large files
+*.svg
+
+# Vercel
+.vercel/
+
+# Firebase
+.firebase/
+firebase-debug.log

@@ -1,0 +1,1510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="TESTIMOTION HTML Generator - Create customized landing pages">
+  <title>TESTIMOTION HTML Generator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar Form -->
+    <aside class="sidebar">
+      <header class="header">
+        <h1>TESTIMOTION Generator</h1>
+        <p>Fill in the fields below to customize your landing page. Changes update the preview in real-time.</p>
+        <div class="header-controls">
+          <div id="autosave-indicator" class="autosave-indicator">
+            <span class="dot"></span>
+            <span>Autosaved</span>
+          </div>
+          <button type="button" id="theme-toggle" class="theme-toggle" title="Toggle light/dark mode">
+            <!-- Sun icon (shown in light mode to switch to dark) -->
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="5"/>
+              <line x1="12" y1="1" x2="12" y2="3"/>
+              <line x1="12" y1="21" x2="12" y2="23"/>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+              <line x1="1" y1="12" x2="3" y2="12"/>
+              <line x1="21" y1="12" x2="23" y2="12"/>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+            </svg>
+            <!-- Moon icon (shown in dark mode to switch to light) -->
+            <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- BRANDING SECTION -->
+      <div class="section">
+        <div class="section-header">
+          <h2>Branding</h2>
+          <span class="toggle-icon">&#9662;</span>
+        </div>
+        <div class="section-content">
+          <div class="form-group">
+            <div class="field-header">
+              <label for="logo_url">Logo URL</label>
+              <button type="button" class="btn-hide" data-field="logo_url" title="Hide in output">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <input type="url" id="logo_url" name="logo_url" placeholder="https://example.com/logo.png">
+          </div>
+
+          <!-- AI Brand Extraction -->
+          <div class="ai-extract-section">
+            <div class="subsection-title">AI Brand Import</div>
+            <div class="form-group">
+              <label for="extract_url">Website URL</label>
+              <div class="extract-input-wrapper">
+                <input type="url" id="extract_url" placeholder="https://yourwebsite.com">
+                <button type="button" id="btn-extract-brand" class="btn-extract">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                    <path d="M15 4V2M15 16v-2M8 9h2M20 9h2M17.8 11.8L19 13M17.8 6.2L19 5M3 21l9-9M12.2 6.2L11 5"/>
+                  </svg>
+                  Extract
+                </button>
+              </div>
+              <p class="extract-hint">Enter a URL to extract brand colors automatically</p>
+            </div>
+          </div>
+
+          <!-- AI Copywriter -->
+          <div class="ai-extract-section">
+            <div class="subsection-title">AI Copywriter</div>
+            <div class="form-group">
+              <label for="copy_url">Website URL</label>
+              <input type="url" id="copy_url" placeholder="https://yourwebsite.com">
+            </div>
+            <div class="form-group">
+              <label for="copy_prompt">Business/Offer Description</label>
+              <textarea id="copy_prompt" placeholder="Describe your business and offer in 1-2 sentences. What do you sell? Who is your target customer? What makes you unique?"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Output Language</label>
+              <div class="language-toggle">
+                <button type="button" class="lang-btn active" data-lang="nl">🇳🇱 Nederlands</button>
+                <button type="button" class="lang-btn" data-lang="en">🇬🇧 English</button>
+              </div>
+              <input type="hidden" id="copy_language" value="nl">
+            </div>
+            <div class="form-group">
+              <button type="button" id="btn-generate-copy" class="btn-generate-copy">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                  <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+                </svg>
+                Generate Copy
+              </button>
+              <p class="extract-hint">AI will generate all text fields based on your business</p>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <div class="field-header">
+                <label for="brand_primary_color">Primary Color</label>
+                <button type="button" class="btn-hide" data-field="brand_primary_color" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <div class="color-input-wrapper">
+                <input type="color" id="brand_primary_color_picker" value="#ffcc03">
+                <input type="text" id="brand_primary_color" name="brand_primary_color" placeholder="#ffcc03">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="field-header">
+                <label for="brand_secondary_color">Secondary Color</label>
+                <button type="button" class="btn-hide" data-field="brand_secondary_color" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <div class="color-input-wrapper">
+                <input type="color" id="brand_secondary_color_picker" value="#0b9a9a">
+                <input type="text" id="brand_secondary_color" name="brand_secondary_color" placeholder="#0b9a9a">
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <div class="field-header">
+                <label for="bg_gradient_start">Background Gradient Start</label>
+                <button type="button" class="btn-hide" data-field="bg_gradient_start" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <div class="color-input-wrapper">
+                <input type="color" id="bg_gradient_start_picker" value="#0a2e1f">
+                <input type="text" id="bg_gradient_start" name="bg_gradient_start" placeholder="#0a2e1f">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="field-header">
+                <label for="bg_gradient_end">Background Gradient End</label>
+                <button type="button" class="btn-hide" data-field="bg_gradient_end" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <div class="color-input-wrapper">
+                <input type="color" id="bg_gradient_end_picker" value="#030a07">
+                <input type="text" id="bg_gradient_end" name="bg_gradient_end" placeholder="#030a07">
+              </div>
+            </div>
+          </div>
+
+          <!-- Typography -->
+          <div class="subsection-title">Typography</div>
+          <div class="form-row">
+            <div class="form-group">
+              <div class="field-header">
+                <label for="heading_font">Heading Font</label>
+                <button type="button" class="btn-hide" data-field="heading_font" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <input type="text" id="heading_font" name="heading_font" placeholder="system-ui, sans-serif">
+            </div>
+            <div class="form-group">
+              <div class="field-header">
+                <label for="body_font">Body Font</label>
+                <button type="button" class="btn-hide" data-field="body_font" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <input type="text" id="body_font" name="body_font" placeholder="system-ui, sans-serif">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HERO SECTION -->
+      <div class="section" data-section-id="hero">
+        <div class="section-header">
+          <h2>Hero Section</h2>
+          <div class="section-header-controls">
+            <button type="button" class="btn-section-hide" data-section="hero" title="Hide entire section in output">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              Hide
+            </button>
+            <span class="toggle-icon">&#9662;</span>
+          </div>
+        </div>
+        <div class="section-content">
+          <div class="form-group">
+            <div class="field-header">
+              <label for="hero_headline">Hero Headline</label>
+              <button type="button" class="btn-hide" data-field="hero_headline" title="Hide in output">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <input type="text" id="hero_headline" name="hero_headline" placeholder="Laat klanten je sales doen.">
+          </div>
+          <div class="form-group">
+            <div class="field-header">
+              <label for="hero_subheadline">Hero Subheadline</label>
+              <button type="button" class="btn-hide" data-field="hero_subheadline" title="Hide in output">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <textarea id="hero_subheadline" name="hero_subheadline" placeholder="Met ons bewezen systeem verzamelen, structureren en presenteren wij klantverhalen die vertrouwen wekken en conversies verhogen."></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <div class="field-header">
+                <label for="cta_button_text">CTA Button Text</label>
+                <button type="button" class="btn-hide" data-field="cta_button_text" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <input type="text" id="cta_button_text" name="cta_button_text" placeholder="Ik wil dit systeem">
+            </div>
+            <div class="form-group">
+              <div class="field-header">
+                <label for="cta_button_url">CTA Button URL</label>
+                <button type="button" class="btn-hide" data-field="cta_button_url" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <input type="url" id="cta_button_url" name="cta_button_url" placeholder="#form">
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="field-header">
+              <label for="cta_button_secondary_text">Secondary CTA Text</label>
+              <button type="button" class="btn-hide" data-field="cta_button_secondary_text" title="Hide in output">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <input type="text" id="cta_button_secondary_text" name="cta_button_secondary_text" placeholder="Laat klanten ook mijn sales doen">
+          </div>
+        </div>
+      </div>
+
+      <!-- VIDEO SECTION -->
+      <div class="section" data-section-id="video">
+        <div class="section-header">
+          <h2>Video</h2>
+          <div class="section-header-controls">
+            <button type="button" class="btn-section-hide" data-section="video" title="Hide entire section in output">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              Hide
+            </button>
+            <span class="toggle-icon">&#9662;</span>
+          </div>
+        </div>
+        <div class="section-content">
+          <div class="form-group">
+            <div class="field-header">
+              <label for="vimeo_embed_url">Vimeo Embed URL</label>
+              <button type="button" class="btn-hide" data-field="vimeo_embed_url" title="Hide in output">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <input type="url" id="vimeo_embed_url" name="vimeo_embed_url" placeholder="https://player.vimeo.com/video/123456789">
+          </div>
+        </div>
+      </div>
+
+      <!-- TRUST BADGES SECTION -->
+      <div class="section" data-section-id="trust_badges">
+        <div class="section-header">
+          <h2>Trust Badges</h2>
+          <div class="section-header-controls">
+            <button type="button" class="btn-section-hide" data-section="trust_badges" title="Hide entire section in output">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              Hide
+            </button>
+            <span class="toggle-icon">&#9662;</span>
+          </div>
+        </div>
+        <div class="section-content">
+          <div class="form-group">
+            <div class="field-header">
+              <label for="trust_badge_count">Trust Badge Count</label>
+              <button type="button" class="btn-hide" data-field="trust_badge_count" title="Hide in output">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <input type="text" id="trust_badge_count" name="trust_badge_count" placeholder="35+">
+          </div>
+          <div class="subsection-title">Badge Photos (5 photos shown overlapping)</div>
+          <div class="form-group">
+            <div class="field-header">
+              <label for="trust_badge_photo_1">Photo 1 URL</label>
+              <button type="button" class="btn-hide" data-field="trust_badge_photo_1" title="Hide in output">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <input type="url" id="trust_badge_photo_1" name="trust_badge_photo_1" placeholder="https://example.com/photo1.jpg">
+          </div>
+          <div class="form-group">
+            <div class="field-header">
+              <label for="trust_badge_photo_2">Photo 2 URL</label>
+              <button type="button" class="btn-hide" data-field="trust_badge_photo_2" title="Hide in output">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <input type="url" id="trust_badge_photo_2" name="trust_badge_photo_2" placeholder="https://example.com/photo2.jpg">
+          </div>
+          <div class="form-group">
+            <div class="field-header">
+              <label for="trust_badge_photo_3">Photo 3 URL</label>
+              <button type="button" class="btn-hide" data-field="trust_badge_photo_3" title="Hide in output">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <input type="url" id="trust_badge_photo_3" name="trust_badge_photo_3" placeholder="https://example.com/photo3.jpg">
+          </div>
+          <div class="form-group">
+            <div class="field-header">
+              <label for="trust_badge_photo_4">Photo 4 URL</label>
+              <button type="button" class="btn-hide" data-field="trust_badge_photo_4" title="Hide in output">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <input type="url" id="trust_badge_photo_4" name="trust_badge_photo_4" placeholder="https://example.com/photo4.jpg">
+          </div>
+          <div class="form-group">
+            <div class="field-header">
+              <label for="trust_badge_photo_5">Photo 5 URL</label>
+              <button type="button" class="btn-hide" data-field="trust_badge_photo_5" title="Hide in output">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <input type="url" id="trust_badge_photo_5" name="trust_badge_photo_5" placeholder="https://example.com/photo5.jpg">
+          </div>
+        </div>
+      </div>
+
+      <!-- MINI TESTIMONIALS SECTION -->
+      <div class="section collapsed" data-section-id="mini_testimonials">
+        <div class="section-header">
+          <h2>Mini Testimonials</h2>
+          <div class="section-header-controls">
+            <button type="button" class="btn-section-hide" data-section="mini_testimonials" title="Hide entire section in output">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              Hide
+            </button>
+            <span class="toggle-icon">&#9662;</span>
+          </div>
+        </div>
+        <div class="section-content">
+          <div class="form-group">
+            <div class="field-header">
+              <label for="mini_testimonial_1">Quote 1</label>
+              <button type="button" class="btn-hide" data-field="mini_testimonial_1" title="Hide in output">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <input type="text" id="mini_testimonial_1" name="mini_testimonial_1" placeholder="Eindelijk een systeem dat werkt!">
+          </div>
+          <div class="form-group">
+            <div class="field-header">
+              <label for="mini_testimonial_2">Quote 2</label>
+              <button type="button" class="btn-hide" data-field="mini_testimonial_2" title="Hide in output">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <input type="text" id="mini_testimonial_2" name="mini_testimonial_2" placeholder="Onze omzet is verdubbeld.">
+          </div>
+          <div class="form-group">
+            <div class="field-header">
+              <label for="mini_testimonial_3">Quote 3</label>
+              <button type="button" class="btn-hide" data-field="mini_testimonial_3" title="Hide in output">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <input type="text" id="mini_testimonial_3" name="mini_testimonial_3" placeholder="Beste investering dit jaar.">
+          </div>
+        </div>
+      </div>
+
+      <!-- PROCESS STEPS SECTION -->
+      <div class="section collapsed" data-section-id="process_steps">
+        <div class="section-header">
+          <h2>Process Steps</h2>
+          <div class="section-header-controls">
+            <button type="button" class="btn-section-hide" data-section="process_steps" title="Hide entire section in output">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              Hide
+            </button>
+            <span class="toggle-icon">&#9662;</span>
+          </div>
+        </div>
+        <div class="section-content">
+          <div class="form-group">
+            <div class="field-header">
+              <label for="process_headline">Process Section Headline</label>
+              <button type="button" class="btn-hide" data-field="process_headline" title="Hide in output">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <input type="text" id="process_headline" name="process_headline" placeholder="Hoe wij in 4 stappen klantverhalen omzetten naar omzet">
+          </div>
+          <div class="form-group">
+            <div class="field-header">
+              <label for="guarantee_text">Guarantee Text</label>
+              <button type="button" class="btn-hide" data-field="guarantee_text" title="Hide in output">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <input type="text" id="guarantee_text" name="guarantee_text" placeholder="100% tevredenheidsgarantie - Geen resultaat? Geld terug.">
+          </div>
+
+          <div class="subsection-title">Step 1</div>
+          <div class="item-group">
+            <div class="form-group">
+              <div class="field-header">
+                <label for="step_1_title">Title</label>
+                <button type="button" class="btn-hide" data-field="step_1_title" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <input type="text" id="step_1_title" name="step_1_title" placeholder="Proof Capture">
+            </div>
+            <div class="form-group">
+              <div class="field-header">
+                <label for="step_1_description">Description</label>
+                <button type="button" class="btn-hide" data-field="step_1_description" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <textarea id="step_1_description" name="step_1_description" placeholder="Wij verzamelen authentieke klantervaringen via gestructureerde interviews en video-opnames."></textarea>
+            </div>
+            <div class="form-group">
+              <div class="field-header">
+                <label for="step_image_1">Image URL</label>
+                <button type="button" class="btn-hide" data-field="step_image_1" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <input type="url" id="step_image_1" name="step_image_1" placeholder="https://example.com/step1.jpg">
+            </div>
+          </div>
+
+          <div class="subsection-title">Step 2</div>
+          <div class="item-group">
+            <div class="form-group">
+              <div class="field-header">
+                <label for="step_2_title">Title</label>
+                <button type="button" class="btn-hide" data-field="step_2_title" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <input type="text" id="step_2_title" name="step_2_title" placeholder="Proof Story Build">
+            </div>
+            <div class="form-group">
+              <div class="field-header">
+                <label for="step_2_description">Description</label>
+                <button type="button" class="btn-hide" data-field="step_2_description" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <textarea id="step_2_description" name="step_2_description" placeholder="We structureren de verhalen tot overtuigende cases met duidelijke resultaten en emotie."></textarea>
+            </div>
+            <div class="form-group">
+              <div class="field-header">
+                <label for="step_image_2">Image URL</label>
+                <button type="button" class="btn-hide" data-field="step_image_2" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <input type="url" id="step_image_2" name="step_image_2" placeholder="https://example.com/step2.jpg">
+            </div>
+          </div>
+
+          <div class="subsection-title">Step 3</div>
+          <div class="item-group">
+            <div class="form-group">
+              <div class="field-header">
+                <label for="step_3_title">Title</label>
+                <button type="button" class="btn-hide" data-field="step_3_title" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <input type="text" id="step_3_title" name="step_3_title" placeholder="Proof Page">
+            </div>
+            <div class="form-group">
+              <div class="field-header">
+                <label for="step_3_description">Description</label>
+                <button type="button" class="btn-hide" data-field="step_3_description" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <textarea id="step_3_description" name="step_3_description" placeholder="Alles komt samen op een krachtige landingspagina die bezoekers omzet in klanten."></textarea>
+            </div>
+            <div class="form-group">
+              <div class="field-header">
+                <label for="step_image_3">Image URL</label>
+                <button type="button" class="btn-hide" data-field="step_image_3" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <input type="url" id="step_image_3" name="step_image_3" placeholder="https://example.com/step3.jpg">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- REVIEWS SECTION -->
+      <div class="section collapsed" data-section-id="google_reviews">
+        <div class="section-header">
+          <h2>Google Reviews (6 Cards)</h2>
+          <div class="section-header-controls">
+            <button type="button" class="btn-section-hide" data-section="google_reviews" title="Hide entire section in output">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              Hide
+            </button>
+            <span class="toggle-icon">&#9662;</span>
+          </div>
+        </div>
+        <div class="section-content">
+          <!-- Review 1 -->
+          <div class="subsection-title">Review 1</div>
+          <div class="item-group">
+            <div class="form-group">
+              <div class="field-header">
+                <label for="review_name_1">Name</label>
+                <button type="button" class="btn-hide" data-field="review_name_1" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <input type="text" id="review_name_1" name="review_name_1" placeholder="Peter de Vries">
+            </div>
+            <div class="form-group">
+              <div class="field-header">
+                <label for="review_text_1">Review Text</label>
+                <button type="button" class="btn-hide" data-field="review_text_1" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <textarea id="review_text_1" name="review_text_1" placeholder="Professionele aanpak en geweldig resultaat. Onze testimonial pagina converteert nu 3x beter."></textarea>
+            </div>
+            <div class="form-group">
+              <div class="field-header">
+                <label for="review_avatar_1">Avatar URL</label>
+                <button type="button" class="btn-hide" data-field="review_avatar_1" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <input type="url" id="review_avatar_1" name="review_avatar_1" placeholder="https://example.com/avatar1.jpg">
+            </div>
+          </div>
+
+          <!-- Review 2 -->
+          <div class="subsection-title">Review 2</div>
+          <div class="item-group">
+            <div class="form-group">
+              <div class="field-header">
+                <label for="review_name_2">Name</label>
+                <button type="button" class="btn-hide" data-field="review_name_2" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <input type="text" id="review_name_2" name="review_name_2" placeholder="Maria Jansen">
+            </div>
+            <div class="form-group">
+              <div class="field-header">
+                <label for="review_text_2">Review Text</label>
+                <button type="button" class="btn-hide" data-field="review_text_2" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <textarea id="review_text_2" name="review_text_2" placeholder="Eindelijk een partij die snapt hoe je klantverhalen moet inzetten. Absolute aanrader!"></textarea>
+            </div>
+            <div class="form-group">
+              <div class="field-header">
+                <label for="review_avatar_2">Avatar URL</label>
+                <button type="button" class="btn-hide" data-field="review_avatar_2" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <input type="url" id="review_avatar_2" name="review_avatar_2" placeholder="https://example.com/avatar2.jpg">
+            </div>
+          </div>
+
+          <!-- Review 3 -->
+          <div class="subsection-title">Review 3</div>
+          <div class="item-group">
+            <div class="form-group">
+              <div class="field-header">
+                <label for="review_name_3">Name</label>
+                <button type="button" class="btn-hide" data-field="review_name_3" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <input type="text" id="review_name_3" name="review_name_3" placeholder="Thomas van Dijk">
+            </div>
+            <div class="form-group">
+              <div class="field-header">
+                <label for="review_text_3">Review Text</label>
+                <button type="button" class="btn-hide" data-field="review_text_3" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <textarea id="review_text_3" name="review_text_3" placeholder="ROI binnen 2 maanden terugverdiend. De video testimonials maken echt het verschil."></textarea>
+            </div>
+            <div class="form-group">
+              <div class="field-header">
+                <label for="review_avatar_3">Avatar URL</label>
+                <button type="button" class="btn-hide" data-field="review_avatar_3" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <input type="url" id="review_avatar_3" name="review_avatar_3" placeholder="https://example.com/avatar3.jpg">
+            </div>
+          </div>
+
+          <!-- Review 4 -->
+          <div class="subsection-title">Review 4</div>
+          <div class="item-group">
+            <div class="form-group">
+              <div class="field-header">
+                <label for="review_name_4">Name</label>
+                <button type="button" class="btn-hide" data-field="review_name_4" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <input type="text" id="review_name_4" name="review_name_4" placeholder="Lisa van den Berg">
+            </div>
+            <div class="form-group">
+              <div class="field-header">
+                <label for="review_text_4">Review Text</label>
+                <button type="button" class="btn-hide" data-field="review_text_4" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <textarea id="review_text_4" name="review_text_4" placeholder="Super tevreden met het resultaat. Klanten komen nu al overtuigd bij ons binnen."></textarea>
+            </div>
+            <div class="form-group">
+              <div class="field-header">
+                <label for="review_avatar_4">Avatar URL</label>
+                <button type="button" class="btn-hide" data-field="review_avatar_4" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <input type="url" id="review_avatar_4" name="review_avatar_4" placeholder="https://example.com/avatar4.jpg">
+            </div>
+          </div>
+
+          <!-- Review 5 -->
+          <div class="subsection-title">Review 5</div>
+          <div class="item-group">
+            <div class="form-group">
+              <div class="field-header">
+                <label for="review_name_5">Name</label>
+                <button type="button" class="btn-hide" data-field="review_name_5" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <input type="text" id="review_name_5" name="review_name_5" placeholder="Jan Willem Addink">
+            </div>
+            <div class="form-group">
+              <div class="field-header">
+                <label for="review_text_5">Review Text</label>
+                <button type="button" class="btn-hide" data-field="review_text_5" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <textarea id="review_text_5" name="review_text_5" placeholder="Door TESTIMOTION hebben we nu een constante stroom van leads die al overtuigd zijn."></textarea>
+            </div>
+            <div class="form-group">
+              <div class="field-header">
+                <label for="review_avatar_5">Avatar URL</label>
+                <button type="button" class="btn-hide" data-field="review_avatar_5" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <input type="url" id="review_avatar_5" name="review_avatar_5" placeholder="https://example.com/avatar5.jpg">
+            </div>
+          </div>
+
+          <!-- Review 6 -->
+          <div class="subsection-title">Review 6</div>
+          <div class="item-group">
+            <div class="form-group">
+              <div class="field-header">
+                <label for="review_name_6">Name</label>
+                <button type="button" class="btn-hide" data-field="review_name_6" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <input type="text" id="review_name_6" name="review_name_6" placeholder="Erik Bakker">
+            </div>
+            <div class="form-group">
+              <div class="field-header">
+                <label for="review_text_6">Review Text</label>
+                <button type="button" class="btn-hide" data-field="review_text_6" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <textarea id="review_text_6" name="review_text_6" placeholder="Fantastische kwaliteit video's en de hele workflow was super smooth."></textarea>
+            </div>
+            <div class="form-group">
+              <div class="field-header">
+                <label for="review_avatar_6">Avatar URL</label>
+                <button type="button" class="btn-hide" data-field="review_avatar_6" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <input type="url" id="review_avatar_6" name="review_avatar_6" placeholder="https://example.com/avatar6.jpg">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIDEO TESTIMONIALS SECTION -->
+      <div class="section collapsed" data-section-id="video_testimonials">
+        <div class="section-header">
+          <h2>Video Testimonials (3 Cards)</h2>
+          <div class="section-header-controls">
+            <button type="button" class="btn-section-hide" data-section="video_testimonials" title="Hide entire section in output">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              Hide
+            </button>
+            <span class="toggle-icon">&#9662;</span>
+          </div>
+        </div>
+        <div class="section-content">
+          <div class="form-group">
+            <div class="field-header">
+              <label for="reviews_headline">Section Headline</label>
+              <button type="button" class="btn-hide" data-field="reviews_headline" title="Hide in output">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <input type="text" id="reviews_headline" name="reviews_headline" placeholder="Dit zeggen onze klanten over het systeem">
+          </div>
+          <div class="form-group">
+            <div class="field-header">
+              <label for="reviews_subheadline">Section Subheadline</label>
+              <button type="button" class="btn-hide" data-field="reviews_subheadline" title="Hide in output">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <input type="text" id="reviews_subheadline" name="reviews_subheadline" placeholder="Bekijk de video testimonials van ondernemers die je voorgingen">
+          </div>
+
+          <div class="form-group">
+            <div class="field-header">
+              <label for="video_format">Video Format</label>
+            </div>
+            <select id="video_format" name="video_format" class="form-select">
+              <option value="landscape">Landscape (16:9)</option>
+              <option value="portrait">Portrait / Reels (9:16)</option>
+            </select>
+          </div>
+
+          <!-- Video Testimonial 1 -->
+          <div class="subsection-title">Video Testimonial 1</div>
+          <div class="item-group">
+            <div class="form-row">
+              <div class="form-group">
+                <div class="field-header">
+                  <label for="video_testimonial_name_1">Name</label>
+                  <button type="button" class="btn-hide" data-field="video_testimonial_name_1" title="Hide in output">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  </button>
+                </div>
+                <input type="text" id="video_testimonial_name_1" name="video_testimonial_name_1" placeholder="Erik Bakker">
+              </div>
+              <div class="form-group">
+                <div class="field-header">
+                  <label for="video_testimonial_company_1">Company</label>
+                  <button type="button" class="btn-hide" data-field="video_testimonial_company_1" title="Hide in output">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  </button>
+                </div>
+                <input type="text" id="video_testimonial_company_1" name="video_testimonial_company_1" placeholder="Digital Agency">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="field-header">
+                <label for="video_testimonial_thumb_1">Thumbnail URL</label>
+                <button type="button" class="btn-hide" data-field="video_testimonial_thumb_1" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <input type="url" id="video_testimonial_thumb_1" name="video_testimonial_thumb_1" placeholder="https://example.com/thumb1.jpg">
+            </div>
+            <div class="form-group">
+              <div class="field-header">
+                <label for="video_testimonial_url_1">Vimeo Embed URL</label>
+                <button type="button" class="btn-hide" data-field="video_testimonial_url_1" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <input type="url" id="video_testimonial_url_1" name="video_testimonial_url_1" placeholder="https://player.vimeo.com/video/123456789">
+            </div>
+          </div>
+
+          <!-- Video Testimonial 2 -->
+          <div class="subsection-title">Video Testimonial 2</div>
+          <div class="item-group">
+            <div class="form-row">
+              <div class="form-group">
+                <div class="field-header">
+                  <label for="video_testimonial_name_2">Name</label>
+                  <button type="button" class="btn-hide" data-field="video_testimonial_name_2" title="Hide in output">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  </button>
+                </div>
+                <input type="text" id="video_testimonial_name_2" name="video_testimonial_name_2" placeholder="Sandra Mulder">
+              </div>
+              <div class="form-group">
+                <div class="field-header">
+                  <label for="video_testimonial_company_2">Company</label>
+                  <button type="button" class="btn-hide" data-field="video_testimonial_company_2" title="Hide in output">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  </button>
+                </div>
+                <input type="text" id="video_testimonial_company_2" name="video_testimonial_company_2" placeholder="Coaching Practice">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="field-header">
+                <label for="video_testimonial_thumb_2">Thumbnail URL</label>
+                <button type="button" class="btn-hide" data-field="video_testimonial_thumb_2" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <input type="url" id="video_testimonial_thumb_2" name="video_testimonial_thumb_2" placeholder="https://example.com/thumb2.jpg">
+            </div>
+            <div class="form-group">
+              <div class="field-header">
+                <label for="video_testimonial_url_2">Vimeo Embed URL</label>
+                <button type="button" class="btn-hide" data-field="video_testimonial_url_2" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <input type="url" id="video_testimonial_url_2" name="video_testimonial_url_2" placeholder="https://player.vimeo.com/video/123456789">
+            </div>
+          </div>
+
+          <!-- Video Testimonial 3 -->
+          <div class="subsection-title">Video Testimonial 3</div>
+          <div class="item-group">
+            <div class="form-row">
+              <div class="form-group">
+                <div class="field-header">
+                  <label for="video_testimonial_name_3">Name</label>
+                  <button type="button" class="btn-hide" data-field="video_testimonial_name_3" title="Hide in output">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  </button>
+                </div>
+                <input type="text" id="video_testimonial_name_3" name="video_testimonial_name_3" placeholder="Mark Hendriks">
+              </div>
+              <div class="form-group">
+                <div class="field-header">
+                  <label for="video_testimonial_company_3">Company</label>
+                  <button type="button" class="btn-hide" data-field="video_testimonial_company_3" title="Hide in output">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                      <circle cx="12" cy="12" r="3"/>
+                    </svg>
+                  </button>
+                </div>
+                <input type="text" id="video_testimonial_company_3" name="video_testimonial_company_3" placeholder="SaaS Company">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="field-header">
+                <label for="video_testimonial_thumb_3">Thumbnail URL</label>
+                <button type="button" class="btn-hide" data-field="video_testimonial_thumb_3" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <input type="url" id="video_testimonial_thumb_3" name="video_testimonial_thumb_3" placeholder="https://example.com/thumb3.jpg">
+            </div>
+            <div class="form-group">
+              <div class="field-header">
+                <label for="video_testimonial_url_3">Vimeo Embed URL</label>
+                <button type="button" class="btn-hide" data-field="video_testimonial_url_3" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <input type="url" id="video_testimonial_url_3" name="video_testimonial_url_3" placeholder="https://player.vimeo.com/video/123456789">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- FOOTER SECTION -->
+      <div class="section collapsed" data-section-id="footer_cta">
+        <div class="section-header">
+          <h2>Footer CTA</h2>
+          <div class="section-header-controls">
+            <button type="button" class="btn-section-hide" data-section="footer_cta" title="Hide entire section in output">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              Hide
+            </button>
+            <span class="toggle-icon">&#9662;</span>
+          </div>
+        </div>
+        <div class="section-content">
+          <div class="form-group">
+            <div class="field-header">
+              <label for="footer_headline">Footer Headline</label>
+              <button type="button" class="btn-hide" data-field="footer_headline" title="Hide in output">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <input type="text" id="footer_headline" name="footer_headline" placeholder="Klaar om je klanten voor je te laten verkopen?">
+          </div>
+          <div class="form-group">
+            <div class="field-header">
+              <label for="footer_subheadline">Footer Subheadline</label>
+              <button type="button" class="btn-hide" data-field="footer_subheadline" title="Hide in output">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <textarea id="footer_subheadline" name="footer_subheadline" placeholder="Plan een vrijblijvend gesprek en ontdek hoe wij jouw klantverhalen omzetten in een conversiemachine."></textarea>
+          </div>
+
+          <div class="subsection-title">Copyright</div>
+          <div class="form-row">
+            <div class="form-group">
+              <div class="field-header">
+                <label for="company_name">Company Name</label>
+                <button type="button" class="btn-hide" data-field="company_name" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <input type="text" id="company_name" name="company_name" placeholder="TESTIMOTION">
+            </div>
+            <div class="form-group">
+              <div class="field-header">
+                <label for="copyright_text">Copyright Text</label>
+                <button type="button" class="btn-hide" data-field="copyright_text" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <input type="text" id="copyright_text" name="copyright_text" placeholder="Alle rechten voorbehouden.">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CLIENT LOGOS SECTION -->
+      <div class="section collapsed" data-section-id="client_logos">
+        <div class="section-header">
+          <h2>Client Logos</h2>
+          <div class="section-header-controls">
+            <button type="button" class="btn-section-hide" data-section="client_logos" title="Hide entire section in output">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              Hide
+            </button>
+            <span class="toggle-icon">&#9662;</span>
+          </div>
+        </div>
+        <div class="section-content">
+          <div class="form-group">
+            <div class="field-header">
+              <label for="client_logo_1">Logo 1 URL</label>
+              <button type="button" class="btn-hide" data-field="client_logo_1" title="Hide in output">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <input type="url" id="client_logo_1" name="client_logo_1" placeholder="https://example.com/client1.png">
+          </div>
+          <div class="form-group">
+            <div class="field-header">
+              <label for="client_logo_2">Logo 2 URL</label>
+              <button type="button" class="btn-hide" data-field="client_logo_2" title="Hide in output">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <input type="url" id="client_logo_2" name="client_logo_2" placeholder="https://example.com/client2.png">
+          </div>
+          <div class="form-group">
+            <div class="field-header">
+              <label for="client_logo_3">Logo 3 URL</label>
+              <button type="button" class="btn-hide" data-field="client_logo_3" title="Hide in output">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <input type="url" id="client_logo_3" name="client_logo_3" placeholder="https://example.com/client3.png">
+          </div>
+          <div class="form-group">
+            <div class="field-header">
+              <label for="client_logo_4">Logo 4 URL</label>
+              <button type="button" class="btn-hide" data-field="client_logo_4" title="Hide in output">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <input type="url" id="client_logo_4" name="client_logo_4" placeholder="https://example.com/client4.png">
+          </div>
+        </div>
+      </div>
+
+      <!-- ADVANCED OPTIONS SECTION -->
+      <div class="section collapsed">
+        <div class="section-header">
+          <h2>Advanced Options</h2>
+          <span class="toggle-icon">&#9662;</span>
+        </div>
+        <div class="section-content">
+          <div class="form-group">
+            <div class="field-header">
+              <label for="border_radius">Corner Radius</label>
+            </div>
+            <div class="range-input-wrapper">
+              <input type="range" id="border_radius_slider" min="0" max="32" value="16" class="range-slider">
+              <div class="range-value-wrapper">
+                <input type="number" id="border_radius" name="border_radius" min="0" max="32" value="16" class="range-value-input">
+                <span class="range-unit">px</span>
+              </div>
+            </div>
+            <p class="field-hint">Affects cards, buttons, video frame (0-32px)</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- FLOATING TESTIMONIAL (OPTIONAL) -->
+      <div class="section collapsed">
+        <div class="section-header">
+          <h2>Floating Testimonial (Optional)</h2>
+          <span class="toggle-icon">&#9662;</span>
+        </div>
+        <div class="section-content">
+          <div class="form-group">
+            <div class="field-header">
+              <label for="testimonial_name">Name</label>
+              <button type="button" class="btn-hide" data-field="testimonial_name" title="Hide in output">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <input type="text" id="testimonial_name" name="testimonial_name" placeholder="Jan Willem Addink">
+          </div>
+          <div class="form-group">
+            <div class="field-header">
+              <label for="testimonial_company">Company</label>
+              <button type="button" class="btn-hide" data-field="testimonial_company" title="Hide in output">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <input type="text" id="testimonial_company" name="testimonial_company" placeholder="Olmia Robotics">
+          </div>
+          <div class="form-group">
+            <div class="field-header">
+              <label for="testimonial_quote">Quote</label>
+              <button type="button" class="btn-hide" data-field="testimonial_quote" title="Hide in output">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <textarea id="testimonial_quote" name="testimonial_quote" placeholder="Door TESTIMOTION hebben we nu een constante stroom van leads die al overtuigd zijn voordat ze contact opnemen."></textarea>
+          </div>
+          <div class="form-group">
+            <div class="field-header">
+              <label for="testimonial_photo_4">Photo URL</label>
+              <button type="button" class="btn-hide" data-field="testimonial_photo_4" title="Hide in output">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <input type="url" id="testimonial_photo_4" name="testimonial_photo_4" placeholder="https://example.com/testimonial.jpg">
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTION BUTTONS -->
+      <div class="actions">
+        <button type="button" id="btn-generate" class="btn btn-primary">
+          Generate HTML
+        </button>
+        <button type="button" id="btn-reset" class="btn btn-secondary">
+          Reset
+        </button>
+        <button type="button" id="btn-copy-link" class="btn btn-secondary">
+          Copy Link
+        </button>
+      </div>
+
+      <!-- VERSION HISTORY SECTION -->
+      <div class="section history-section">
+        <div class="section-header">
+          <h2>Version History</h2>
+          <span class="toggle-icon">&#9662;</span>
+        </div>
+        <div class="section-content">
+          <div class="history-controls">
+            <button type="button" id="btn-save-version" class="btn btn-secondary btn-sm">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                <polyline points="17 21 17 13 7 13 7 21"/>
+                <polyline points="7 3 7 8 15 8"/>
+              </svg>
+              Save Version
+            </button>
+          </div>
+          <div id="history-list" class="history-list">
+            <div class="history-empty">No saved versions</div>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- Preview Panel -->
+    <main class="preview-panel">
+      <header class="preview-header">
+        <h3>Live Preview</h3>
+        <div class="preview-controls">
+          <!-- Viewport Switcher -->
+          <div class="viewport-switcher">
+            <button type="button" class="viewport-btn active" data-viewport="desktop" title="Desktop (1200px)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+                <line x1="8" y1="21" x2="16" y2="21"/>
+                <line x1="12" y1="17" x2="12" y2="21"/>
+              </svg>
+            </button>
+            <button type="button" class="viewport-btn" data-viewport="tablet" title="Tablet (768px)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                <rect x="4" y="2" width="16" height="20" rx="2" ry="2"/>
+                <line x1="12" y1="18" x2="12.01" y2="18"/>
+              </svg>
+            </button>
+            <button type="button" class="viewport-btn" data-viewport="mobile" title="Mobile (375px)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+                <line x1="12" y1="18" x2="12.01" y2="18"/>
+              </svg>
+            </button>
+          </div>
+          <button type="button" id="btn-new-tab-preview" class="btn-preview-tab" title="Open in New Tab">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+              <polyline points="15 3 21 3 21 9"/>
+              <line x1="10" y1="14" x2="21" y2="3"/>
+            </svg>
+            <span>New Tab</span>
+          </button>
+        </div>
+      </header>
+      <div class="preview-iframe-container" id="preview-iframe-container">
+        <iframe id="preview-iframe" class="preview-iframe" title="Preview"></iframe>
+      </div>
+    </main>
+  </div>
+
+  <!-- Output Modal -->
+  <div id="modal-overlay" class="modal-overlay">
+    <div class="modal">
+      <header class="modal-header">
+        <h3>Generated HTML</h3>
+        <button id="modal-close" class="modal-close">&times;</button>
+      </header>
+      <div class="modal-body">
+        <textarea id="output-textarea" readonly></textarea>
+      </div>
+      <footer class="modal-footer">
+        <button type="button" id="btn-copy-html" class="btn btn-primary">
+          Copy HTML
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Save Version Modal -->
+  <div id="save-version-modal" class="modal-overlay">
+    <div class="modal modal-sm">
+      <header class="modal-header">
+        <h3>Save Version</h3>
+        <button id="save-version-close" class="modal-close">&times;</button>
+      </header>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="version-label-input">Version Label</label>
+          <input type="text" id="version-label-input" placeholder="e.g., Initial draft, Client feedback applied..." autofocus>
+        </div>
+      </div>
+      <footer class="modal-footer">
+        <button type="button" id="btn-confirm-save" class="btn btn-primary">
+          Save Version
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Brand Extraction Modal -->
+  <div id="extract-modal" class="modal-overlay">
+    <div class="modal modal-md">
+      <header class="modal-header">
+        <h3>Extracted Brand</h3>
+        <button id="extract-modal-close" class="modal-close">&times;</button>
+      </header>
+      <div class="modal-body">
+        <div id="extract-source" class="extract-source"></div>
+        <div id="extracted-colors" class="color-preview-grid">
+          <!-- Color swatches rendered here -->
+        </div>
+        <div id="extracted-fonts" class="font-preview">
+          <!-- Font previews rendered here -->
+        </div>
+        <div id="extracted-logo" class="logo-preview">
+          <!-- Logo preview rendered here -->
+        </div>
+      </div>
+      <footer class="modal-footer">
+        <button type="button" id="btn-apply-brand" class="btn btn-primary">
+          Apply Brand
+        </button>
+        <button type="button" id="btn-cancel-extract" class="btn btn-secondary">
+          Cancel
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- AI Copy Review Modal -->
+  <div id="copy-modal" class="modal-overlay">
+    <div class="modal modal-lg">
+      <header class="modal-header">
+        <h3>Generated Copy</h3>
+        <button id="copy-modal-close" class="modal-close">&times;</button>
+      </header>
+      <div class="modal-body">
+        <div id="copy-source" class="extract-source"></div>
+        <div id="generated-copy-preview" class="copy-preview-grid">
+          <!-- Generated copy preview rendered here -->
+        </div>
+      </div>
+      <footer class="modal-footer">
+        <button type="button" id="btn-apply-copy" class="btn btn-primary">
+          Apply All Copy
+        </button>
+        <button type="button" id="btn-cancel-copy" class="btn btn-secondary">
+          Cancel
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast"></div>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+key,value,description
+logo_url,,URL to company logo (white/transparent recommended)
+brand_primary_color,#ffcc03,Primary brand color (yellow)
+brand_secondary_color,#0b9a9a,Secondary brand color (teal)
+bg_gradient_start,#0a2e1f,Background gradient start color
+bg_gradient_end,#030a07,Background gradient end color
+hero_headline,Laat klanten je sales doen.,Main hero headline
+hero_subheadline,Met ons bewezen systeem verzamelen structureren en presenteren wij klantverhalen die vertrouwen wekken en conversies verhogen.,Hero subtitle
+cta_button_text,Ik wil dit systeem,Primary CTA button text
+cta_button_secondary_text,Laat klanten ook mijn sales doen,Secondary CTA button text
+cta_button_url,#form,CTA button link
+vimeo_embed_url,,Vimeo embed URL (e.g. https://player.vimeo.com/video/123456)
+trust_badge_count,35+,Number of trusted clients
+trust_badge_photo_1,,Avatar image URL
+trust_badge_photo_2,,Avatar image URL
+trust_badge_photo_3,,Avatar image URL
+trust_badge_photo_4,,Avatar image URL
+trust_badge_photo_5,,Avatar image URL
+mini_testimonial_1,Eindelijk een systeem dat werkt!,Mini quote 1
+mini_testimonial_2,Onze omzet is verdubbeld.,Mini quote 2
+mini_testimonial_3,Beste investering dit jaar.,Mini quote 3
+process_headline,Hoe wij in 4 stappen klantverhalen omzetten naar omzet,Process section headline
+step_1_title,Proof Capture,Step 1 title
+step_1_description,Wij verzamelen authentieke klantervaringen via gestructureerde interviews en video-opnames.,Step 1 description
+step_image_1,,Step 1 image URL
+step_2_title,Proof Story Build,Step 2 title
+step_2_description,We structureren de verhalen tot overtuigende cases met duidelijke resultaten en emotie.,Step 2 description
+step_image_2,,Step 2 image URL
+step_3_title,Proof Page,Step 3 title
+step_3_description,Alles komt samen op een krachtige landingspagina die bezoekers omzet in klanten.,Step 3 description
+step_image_3,,Step 3 image URL
+guarantee_text,100% tevredenheidsgarantie - Geen resultaat? Geld terug.,Guarantee text
+review_name_1,Peter de Vries,Reviewer 1 name
+review_text_1,Professionele aanpak en geweldig resultaat. Onze testimonial pagina converteert nu 3x beter.,Review 1 text
+review_avatar_1,,Reviewer 1 avatar URL
+review_name_2,Maria Jansen,Reviewer 2 name
+review_text_2,Eindelijk een partij die snapt hoe je klantverhalen moet inzetten. Absolute aanrader!,Review 2 text
+review_avatar_2,,Reviewer 2 avatar URL
+review_name_3,Thomas van Dijk,Reviewer 3 name
+review_text_3,ROI binnen 2 maanden terugverdiend. De video testimonials maken echt het verschil.,Review 3 text
+review_avatar_3,,Reviewer 3 avatar URL
+review_name_4,Lisa van den Berg,Reviewer 4 name
+review_text_4,Super tevreden met het resultaat. Klanten komen nu al overtuigd bij ons binnen.,Review 4 text
+review_avatar_4,,Reviewer 4 avatar URL
+review_name_5,Jan Willem Addink,Reviewer 5 name
+review_text_5,Door TESTIMOTION hebben we nu een constante stroom van leads die al overtuigd zijn.,Review 5 text
+review_avatar_5,,Reviewer 5 avatar URL
+review_name_6,Erik Bakker,Reviewer 6 name
+review_text_6,Fantastische kwaliteit videos en de hele workflow was super smooth.,Review 6 text
+review_avatar_6,,Reviewer 6 avatar URL
+reviews_headline,Dit zeggen onze klanten over het systeem,Video testimonials headline
+reviews_subheadline,Bekijk de video testimonials van ondernemers die je voorgingen,Video testimonials subheadline
+video_testimonial_thumb_1,,Video thumbnail 1 URL
+video_testimonial_name_1,Erik Bakker,Video testimonial 1 name
+video_testimonial_company_1,Digital Agency,Video testimonial 1 company
+video_testimonial_thumb_2,,Video thumbnail 2 URL
+video_testimonial_name_2,Sandra Mulder,Video testimonial 2 name
+video_testimonial_company_2,Coaching Practice,Video testimonial 2 company
+video_testimonial_thumb_3,,Video thumbnail 3 URL
+video_testimonial_name_3,Mark Hendriks,Video testimonial 3 name
+video_testimonial_company_3,SaaS Company,Video testimonial 3 company
+footer_headline,Klaar om je klanten voor je te laten verkopen?,Footer CTA headline
+footer_subheadline,Plan een vrijblijvend gesprek en ontdek hoe wij jouw klantverhalen omzetten in een conversiemachine.,Footer CTA subheadline
+client_logo_1,,Client logo 1 URL
+client_logo_2,,Client logo 2 URL
+client_logo_3,,Client logo 3 URL
+client_logo_4,,Client logo 4 URL
+current_year,2025,Copyright year

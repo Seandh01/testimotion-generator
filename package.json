@@ -1,0 +1,40 @@
+{
+  "name": "thmotion-ghl-landing",
+  "version": "1.0.0",
+  "description": "TESTIMOTION GHL Landing Page with Playwright Visual Testing",
+  "main": "index.js",
+  "scripts": {
+    "extract-images": "node tests/extract-images.js",
+    "create-placeholders": "node tests/create-placeholders.js",
+    "test": "npx playwright test",
+    "test:update": "npx playwright test --update-snapshots",
+    "test:ui": "npx playwright test --ui",
+    "test:report": "npx playwright show-report",
+    "test:debug": "npx playwright test --debug",
+    "preview": "open preview/index.html",
+    "serve": "npx serve preview -p 3000",
+    "start": "npx serve preview -p 3000 -o",
+    "server": "node generator/server.js"
+  },
+  "keywords": [
+    "ghl",
+    "landing-page",
+    "playwright",
+    "visual-testing",
+    "testimotion"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "@playwright/test": "^1.58.1",
+    "playwright": "^1.58.1"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.21.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "uuid": "^10.0.0"
+  }
+}
