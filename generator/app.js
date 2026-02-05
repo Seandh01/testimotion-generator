@@ -6,8 +6,19 @@ import {
   loadVersion,
   deleteVersion,
   formatTimestamp,
-  getClientId
+  migrateLocalToSupabase
 } from './history.js';
+import {
+  initAuth,
+  loginWithMagicLink,
+  logout,
+  getCurrentUser,
+  isAuthenticated,
+  getUserEmail,
+  onAuthStateChange,
+  isAuthAvailable
+} from './auth.js';
+import { initFontPickers, getSelectedWeight } from './font-picker.js';
 
 const STORAGE_KEY = 'testimotion_form_data';
 const THEME_STORAGE_KEY = 'testimotion_theme';
@@ -129,6 +140,10 @@ function loadFromStorage() {
           if (sectionEl) sectionEl.classList.add('section-hidden');
         }
       });
+      // Restore section order
+      if (data.sectionOrder && data.sectionOrder.length > 0) {
+        applySectionOrder(data.sectionOrder);
+      }
       return true;
     } catch (e) {
       console.error('Failed to load from storage:', e);
@@ -181,7 +196,8 @@ function saveToStorage() {
   const values = getFormValues();
   const hidden = getHiddenFields();
   const hiddenSections = getHiddenSections();
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({ values, hidden, hiddenSections }));
+  const sectionOrder = getSectionOrder();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ values, hidden, hiddenSections, sectionOrder }));
 
   // Update autosave indicator
   const indicator = document.getElementById('autosave-indicator');
@@ -221,6 +237,13 @@ function getFormValues(excludeHidden = false) {
   if (excludeHidden && hiddenSections.length > 0) {
     values._hiddenSections = hiddenSections;
   }
+
+  // Include section order for template rendering
+  values._sectionOrder = getSectionOrder();
+
+  // Include selected font weights
+  values._headingWeight = getSelectedWeight('heading_font');
+  values._bodyWeight = getSelectedWeight('body_font');
 
   return values;
 }
@@ -566,13 +589,41 @@ async function refreshHistoryList() {
   try {
     const history = await fetchVersions();
     const versions = history.versions || [];
+    const loggedIn = isAuthenticated();
 
     if (versions.length === 0) {
-      historyList.innerHTML = '<div class="history-empty">No saved versions</div>';
+      if (!loggedIn && isAuthAvailable()) {
+        // Show login prompt when not authenticated
+        historyList.innerHTML = `
+          <div class="history-auth-notice">
+            <p>Versions are stored locally.</p>
+            <p><a id="history-login-link">Login</a> to save versions to the cloud.</p>
+          </div>
+        `;
+        // Add click handler
+        const loginLink = document.getElementById('history-login-link');
+        if (loginLink) {
+          loginLink.addEventListener('click', showLoginModal);
+        }
+      } else {
+        historyList.innerHTML = '<div class="history-empty">No saved versions</div>';
+      }
       return;
     }
 
-    historyList.innerHTML = versions.map(v => `
+    // Build version list HTML
+    let html = '';
+
+    // Show cloud/local indicator
+    if (!loggedIn && isAuthAvailable()) {
+      html += `
+        <div class="history-auth-notice" style="margin-bottom: 12px; padding: 12px;">
+          <a id="history-login-link">Login</a> to sync versions to the cloud
+        </div>
+      `;
+    }
+
+    html += versions.map(v => `
       <div class="history-item" data-id="${v.id}">
         <div class="history-item-info">
           <span class="history-item-label">${escapeHtml(v.label)}</span>
@@ -593,7 +644,14 @@ async function refreshHistoryList() {
       </div>
     `).join('');
 
+    historyList.innerHTML = html;
+
     // Add event listeners
+    const loginLink = document.getElementById('history-login-link');
+    if (loginLink) {
+      loginLink.addEventListener('click', showLoginModal);
+    }
+
     historyList.querySelectorAll('.history-btn.load').forEach(btn => {
       btn.addEventListener('click', () => loadVersionIntoForm(btn.dataset.id));
     });
@@ -779,12 +837,16 @@ function applyExtractedBrand() {
     }
   }
 
-  // Optionally apply logo
+  // Apply logo (replace placeholders)
   if (extractedBrandData.logo) {
     const logoInput = document.querySelector('[name="logo_url"]');
-    if (logoInput && !logoInput.value) {
-      logoInput.value = extractedBrandData.logo;
-      logoInput.dispatchEvent(new Event('input', { bubbles: true }));
+    if (logoInput) {
+      const current = logoInput.value || '';
+      const isPlaceholder = !current || current.includes('placehold.co') || current.includes('placeholder.com');
+      if (isPlaceholder) {
+        logoInput.value = extractedBrandData.logo;
+        logoInput.dispatchEvent(new Event('input', { bubbles: true }));
+      }
     }
   }
 
@@ -1008,6 +1070,185 @@ function hideCopyModal() {
 }
 
 // ============================================
+// SECTION ORDERING (DRAG & DROP)
+// ============================================
+
+// Default section order
+const DEFAULT_SECTION_ORDER = [
+  'hero',
+  'video',
+  'trust_badges',
+  'mini_testimonials',
+  'process_steps',
+  'google_reviews',
+  'video_testimonials',
+  'footer_cta',
+  'faq',
+  'client_logos'
+];
+
+// Currently dragging element
+let draggedSection = null;
+
+// Get current section order from DOM
+function getSectionOrder() {
+  const sections = document.querySelectorAll('.section[data-section-id]');
+  return [...sections].map(s => s.dataset.sectionId);
+}
+
+// Apply section order to DOM by reordering elements
+function applySectionOrder(order) {
+  if (!order || order.length === 0) return;
+
+  const sidebar = document.querySelector('.sidebar form') || document.querySelector('.sidebar');
+  if (!sidebar) return;
+
+  // Get all sections with data-section-id
+  const sections = [...sidebar.querySelectorAll('.section[data-section-id]')];
+  const sectionMap = {};
+  sections.forEach(s => {
+    sectionMap[s.dataset.sectionId] = s;
+  });
+
+  // Find the reference point (first section with data-section-id)
+  const firstSection = sections[0];
+  if (!firstSection) return;
+
+  // Get the parent element
+  const parent = firstSection.parentElement;
+
+  // Reorder sections according to the order array
+  order.forEach((sectionId, index) => {
+    const section = sectionMap[sectionId];
+    if (section) {
+      // Move section to correct position
+      if (index === 0) {
+        // Insert before the first non-draggable section or at the reference point
+        const referenceNode = [...parent.querySelectorAll('.section[data-section-id]')][0];
+        if (referenceNode && referenceNode !== section) {
+          parent.insertBefore(section, referenceNode);
+        }
+      } else {
+        // Insert after the previous section in the order
+        const prevSectionId = order[index - 1];
+        const prevSection = sectionMap[prevSectionId];
+        if (prevSection && prevSection.nextElementSibling !== section) {
+          prevSection.after(section);
+        }
+      }
+    }
+  });
+}
+
+// Initialize drag and drop for sections
+function initDragDrop() {
+  const sections = document.querySelectorAll('.section[data-section-id]');
+
+  sections.forEach(section => {
+    const dragHandle = section.querySelector('.section-drag-handle');
+    if (!dragHandle) return;
+
+    // Make section draggable
+    section.setAttribute('draggable', 'true');
+
+    // Drag start - only on drag handle
+    dragHandle.addEventListener('mousedown', () => {
+      section.classList.add('drag-ready');
+    });
+
+    document.addEventListener('mouseup', () => {
+      section.classList.remove('drag-ready');
+    });
+
+    section.addEventListener('dragstart', (e) => {
+      // Only allow drag if started from handle
+      if (!section.classList.contains('drag-ready') && !e.target.closest('.section-drag-handle')) {
+        e.preventDefault();
+        return;
+      }
+
+      draggedSection = section;
+      section.classList.add('dragging');
+
+      // Set drag data
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', section.dataset.sectionId);
+
+      // Use a timeout to avoid visual glitch
+      setTimeout(() => {
+        section.style.opacity = '0.5';
+      }, 0);
+    });
+
+    section.addEventListener('dragend', () => {
+      section.classList.remove('dragging', 'drag-ready');
+      section.style.opacity = '';
+      draggedSection = null;
+
+      // Remove all drag-over states
+      document.querySelectorAll('.section.drag-over').forEach(s => {
+        s.classList.remove('drag-over');
+      });
+
+      // Save new order
+      debouncedSaveToStorage();
+      debouncedUpdatePreview();
+    });
+
+    // Drag over
+    section.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+
+      if (draggedSection && draggedSection !== section && section.dataset.sectionId) {
+        section.classList.add('drag-over');
+      }
+    });
+
+    // Drag leave
+    section.addEventListener('dragleave', () => {
+      section.classList.remove('drag-over');
+    });
+
+    // Drop
+    section.addEventListener('drop', (e) => {
+      e.preventDefault();
+      section.classList.remove('drag-over');
+
+      if (!draggedSection || draggedSection === section) return;
+
+      // Get parent
+      const parent = section.parentElement;
+
+      // Determine where to insert
+      const rect = section.getBoundingClientRect();
+      const midY = rect.top + rect.height / 2;
+
+      if (e.clientY < midY) {
+        // Insert before
+        parent.insertBefore(draggedSection, section);
+      } else {
+        // Insert after
+        section.after(draggedSection);
+      }
+    });
+  });
+
+  // Prevent default browser drag on section content
+  sections.forEach(section => {
+    const content = section.querySelector('.section-content');
+    if (content) {
+      content.addEventListener('dragstart', (e) => {
+        if (!e.target.closest('.section-drag-handle')) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+      });
+    }
+  });
+}
+
+// ============================================
 // VIEWPORT SWITCHER
 // ============================================
 
@@ -1095,6 +1336,189 @@ function focusFormField(fieldName) {
 }
 
 // ============================================
+// AUTHENTICATION
+// ============================================
+
+// Update auth UI based on current state
+function updateAuthUI(user) {
+  const loggedOutEl = document.getElementById('auth-logged-out');
+  const loggedInEl = document.getElementById('auth-logged-in');
+  const userEmailEl = document.getElementById('user-email');
+
+  if (!loggedOutEl || !loggedInEl) return;
+
+  if (user) {
+    // User is logged in
+    loggedOutEl.style.display = 'none';
+    loggedInEl.style.display = 'flex';
+    if (userEmailEl) {
+      userEmailEl.textContent = user.email || 'User';
+      userEmailEl.title = user.email || '';
+    }
+  } else {
+    // User is logged out
+    loggedOutEl.style.display = 'flex';
+    loggedInEl.style.display = 'none';
+  }
+}
+
+// Show login modal
+function showLoginModal() {
+  const modal = document.getElementById('login-modal');
+  const emailInput = document.getElementById('login-email');
+  const messageEl = document.getElementById('login-message');
+
+  if (modal) {
+    modal.classList.add('active');
+    // Clear previous state
+    if (emailInput) {
+      emailInput.value = '';
+      emailInput.focus();
+    }
+    if (messageEl) {
+      messageEl.className = 'login-message';
+      messageEl.textContent = '';
+    }
+  }
+}
+
+// Hide login modal
+function hideLoginModal() {
+  const modal = document.getElementById('login-modal');
+  if (modal) {
+    modal.classList.remove('active');
+  }
+}
+
+// Handle sending magic link
+async function handleSendMagicLink() {
+  const emailInput = document.getElementById('login-email');
+  const messageEl = document.getElementById('login-message');
+  const sendBtn = document.getElementById('btn-send-magic-link');
+  const btnText = sendBtn?.querySelector('.btn-text');
+  const btnLoading = sendBtn?.querySelector('.btn-loading');
+
+  const email = emailInput?.value?.trim();
+
+  if (!email) {
+    if (messageEl) {
+      messageEl.className = 'login-message error';
+      messageEl.textContent = 'Please enter your email address.';
+    }
+    return;
+  }
+
+  // Show loading state
+  if (sendBtn) sendBtn.disabled = true;
+  if (btnText) btnText.style.display = 'none';
+  if (btnLoading) btnLoading.style.display = 'flex';
+
+  const result = await loginWithMagicLink(email);
+
+  // Hide loading state
+  if (sendBtn) sendBtn.disabled = false;
+  if (btnText) btnText.style.display = 'inline';
+  if (btnLoading) btnLoading.style.display = 'none';
+
+  if (result.success) {
+    if (messageEl) {
+      messageEl.className = 'login-message success';
+      messageEl.textContent = 'Check your email for a login link. You can close this modal.';
+    }
+  } else {
+    if (messageEl) {
+      messageEl.className = 'login-message error';
+      messageEl.textContent = result.error || 'Failed to send login link.';
+    }
+  }
+}
+
+// Handle logout
+async function handleLogout() {
+  const result = await logout();
+
+  if (result.success) {
+    showToast('Logged out');
+    // Refresh history list to show localStorage data
+    await refreshHistoryList();
+  } else {
+    showToast(result.error || 'Failed to logout', true);
+  }
+}
+
+// Handle auth state change
+async function handleAuthStateChange(user, event) {
+  updateAuthUI(user);
+
+  if (user && (event === 'SIGNED_IN' || event === 'INITIAL')) {
+    // User just logged in - check for local versions to migrate
+    const migrated = await migrateLocalToSupabase();
+    if (migrated > 0) {
+      showToast(`Migrated ${migrated} local version(s) to your account`);
+    }
+
+    // Refresh history list with Supabase data
+    await refreshHistoryList();
+
+    // Close login modal if open
+    hideLoginModal();
+  } else if (!user && event === 'SIGNED_OUT') {
+    // User logged out - refresh to show localStorage data
+    await refreshHistoryList();
+  }
+}
+
+// Initialize auth listeners
+function initAuthListeners() {
+  // Login button
+  const btnLogin = document.getElementById('btn-login');
+  if (btnLogin) {
+    btnLogin.addEventListener('click', showLoginModal);
+  }
+
+  // Logout button
+  const btnLogout = document.getElementById('btn-logout');
+  if (btnLogout) {
+    btnLogout.addEventListener('click', handleLogout);
+  }
+
+  // Login modal
+  const loginModal = document.getElementById('login-modal');
+  if (loginModal) {
+    // Close on overlay click
+    loginModal.addEventListener('click', (e) => {
+      if (e.target === e.currentTarget) hideLoginModal();
+    });
+
+    // Close button
+    const closeBtn = document.getElementById('login-modal-close');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', hideLoginModal);
+    }
+
+    // Send magic link button
+    const sendBtn = document.getElementById('btn-send-magic-link');
+    if (sendBtn) {
+      sendBtn.addEventListener('click', handleSendMagicLink);
+    }
+
+    // Enter key to send
+    const emailInput = document.getElementById('login-email');
+    if (emailInput) {
+      emailInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          handleSendMagicLink();
+        }
+      });
+    }
+  }
+
+  // Subscribe to auth state changes
+  onAuthStateChange(handleAuthStateChange);
+}
+
+// ============================================
 // INITIALIZATION
 // ============================================
 
@@ -1102,6 +1526,15 @@ function focusFormField(fieldName) {
 async function init() {
   // Initialize theme before anything else
   initTheme();
+
+  // Initialize auth system
+  await initAuth();
+
+  // Initialize auth UI listeners
+  initAuthListeners();
+
+  // Update auth UI with current state
+  updateAuthUI(getCurrentUser());
 
   // Theme toggle button listener
   const themeToggle = document.getElementById('theme-toggle');
@@ -1114,6 +1547,9 @@ async function init() {
 
   // Sync range inputs (border radius slider)
   syncRangeInputs();
+
+  // Initialize font pickers (Google Fonts search + weight selectors)
+  initFontPickers();
 
   // Priority: 1) localStorage, 2) URL params, 3) defaults
   const hasStorage = loadFromStorage();
@@ -1129,6 +1565,9 @@ async function init() {
 
   // Initialize hide toggles
   initHideToggles();
+
+  // Initialize drag & drop for section ordering
+  initDragDrop();
 
   // Add input listeners for live preview and autosave
   document.querySelectorAll('[name]').forEach(el => {
@@ -1263,14 +1702,9 @@ async function init() {
       hideSaveVersionModal();
       hideExtractModal();
       hideCopyModal();
+      hideLoginModal();
     }
   });
-
-  // Display client ID (for debugging/reference)
-  const clientIdEl = document.getElementById('client-id-display');
-  if (clientIdEl) {
-    clientIdEl.textContent = getClientId();
-  }
 }
 
 // Start app when DOM is ready

@@ -6,6 +6,14 @@
   <meta name="description" content="TESTIMOTION HTML Generator - Create customized landing pages">
   <title>TESTIMOTION HTML Generator</title>
   <link rel="stylesheet" href="style.css">
+  <!-- Supabase JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Supabase configuration - set your anon key here -->
+  <script>
+    // IMPORTANT: Replace with your actual Supabase anon key
+    // This is safe to expose - Row Level Security protects your data
+    window.SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJoZGdweGRwcHdndmVpY2p6bm9rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg5NTg0OTQsImV4cCI6MjA2NDUzNDQ5NH0.TXjDhfMGPPWcvlJUvJrLrLRGZIQMIoD-0C9pZuSn9sU';
+  </script>
 </head>
 <body>
   <div class="container">
@@ -15,6 +23,25 @@
         <h1>TESTIMOTION Generator</h1>
         <p>Fill in the fields below to customize your landing page. Changes update the preview in real-time.</p>
         <div class="header-controls">
+          <!-- Auth UI - shows login button or user info -->
+          <div id="auth-ui" class="auth-ui">
+            <!-- Logged out state -->
+            <div id="auth-logged-out" class="auth-state">
+              <button type="button" id="btn-login" class="btn-login">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+                  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                  <polyline points="10 17 15 12 10 7"/>
+                  <line x1="15" y1="12" x2="3" y2="12"/>
+                </svg>
+                Login
+              </button>
+            </div>
+            <!-- Logged in state -->
+            <div id="auth-logged-in" class="auth-state" style="display: none;">
+              <span id="user-email" class="user-email"></span>
+              <button type="button" id="btn-logout" class="btn-logout">Logout</button>
+            </div>
+          </div>
           <div id="autosave-indicator" class="autosave-indicator">
             <span class="dot"></span>
             <span>Autosaved</span>
@@ -187,7 +214,14 @@
                   </svg>
                 </button>
               </div>
-              <input type="text" id="heading_font" name="heading_font" placeholder="system-ui, sans-serif">
+              <input type="text" id="heading_font" name="heading_font" placeholder="system-ui, sans-serif" autocomplete="off">
+              <div class="font-weight-selector" data-for="heading_font">
+                <button type="button" class="font-weight-btn" data-weight="300">Light</button>
+                <button type="button" class="font-weight-btn" data-weight="400">Regular</button>
+                <button type="button" class="font-weight-btn active" data-weight="600">Semi</button>
+                <button type="button" class="font-weight-btn" data-weight="700">Bold</button>
+                <button type="button" class="font-weight-btn" data-weight="900">Black</button>
+              </div>
             </div>
             <div class="form-group">
               <div class="field-header">
@@ -199,7 +233,13 @@
                   </svg>
                 </button>
               </div>
-              <input type="text" id="body_font" name="body_font" placeholder="system-ui, sans-serif">
+              <input type="text" id="body_font" name="body_font" placeholder="system-ui, sans-serif" autocomplete="off">
+              <div class="font-weight-selector" data-for="body_font">
+                <button type="button" class="font-weight-btn" data-weight="300">Light</button>
+                <button type="button" class="font-weight-btn active" data-weight="400">Regular</button>
+                <button type="button" class="font-weight-btn" data-weight="600">Semi</button>
+                <button type="button" class="font-weight-btn" data-weight="700">Bold</button>
+              </div>
             </div>
           </div>
         </div>
@@ -208,6 +248,9 @@
       <!-- HERO SECTION -->
       <div class="section" data-section-id="hero">
         <div class="section-header">
+          <span class="section-drag-handle" title="Drag to reorder">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 15h18v-2H3v2zm0 4h18v-2H3v2zm0-8h18V9H3v2zm0-6v2h18V5H3z"/></svg>
+          </span>
           <h2>Hero Section</h2>
           <div class="section-header-controls">
             <button type="button" class="btn-section-hide" data-section="hero" title="Hide entire section in output">
@@ -289,6 +332,9 @@
       <!-- VIDEO SECTION -->
       <div class="section" data-section-id="video">
         <div class="section-header">
+          <span class="section-drag-handle" title="Drag to reorder">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 15h18v-2H3v2zm0 4h18v-2H3v2zm0-8h18V9H3v2zm0-6v2h18V5H3z"/></svg>
+          </span>
           <h2>Video</h2>
           <div class="section-header-controls">
             <button type="button" class="btn-section-hide" data-section="video" title="Hide entire section in output">
@@ -320,6 +366,9 @@
       <!-- TRUST BADGES SECTION -->
       <div class="section" data-section-id="trust_badges">
         <div class="section-header">
+          <span class="section-drag-handle" title="Drag to reorder">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 15h18v-2H3v2zm0 4h18v-2H3v2zm0-8h18V9H3v2zm0-6v2h18V5H3z"/></svg>
+          </span>
           <h2>Trust Badges</h2>
           <div class="section-header-controls">
             <button type="button" class="btn-section-hide" data-section="trust_badges" title="Hide entire section in output">
@@ -412,6 +461,9 @@
       <!-- MINI TESTIMONIALS SECTION -->
       <div class="section collapsed" data-section-id="mini_testimonials">
         <div class="section-header">
+          <span class="section-drag-handle" title="Drag to reorder">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 15h18v-2H3v2zm0 4h18v-2H3v2zm0-8h18V9H3v2zm0-6v2h18V5H3z"/></svg>
+          </span>
           <h2>Mini Testimonials</h2>
           <div class="section-header-controls">
             <button type="button" class="btn-section-hide" data-section="mini_testimonials" title="Hide entire section in output">
@@ -425,41 +477,68 @@
           </div>
         </div>
         <div class="section-content">
-          <div class="form-group">
-            <div class="field-header">
-              <label for="mini_testimonial_1">Quote 1</label>
-              <button type="button" class="btn-hide" data-field="mini_testimonial_1" title="Hide in output">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                  <circle cx="12" cy="12" r="3"/>
-                </svg>
-              </button>
+          <div class="subsection-title">Testimonial 1</div>
+          <div class="form-row">
+            <div class="form-group" style="flex: 0 0 120px;">
+              <div class="field-header">
+                <label for="mini_testimonial_avatar_1">Avatar URL</label>
+              </div>
+              <input type="text" id="mini_testimonial_avatar_1" name="mini_testimonial_avatar_1" placeholder="https://...">
             </div>
-            <input type="text" id="mini_testimonial_1" name="mini_testimonial_1" placeholder="Eindelijk een systeem dat werkt!">
+            <div class="form-group" style="flex: 1;">
+              <div class="field-header">
+                <label for="mini_testimonial_1">Quote</label>
+                <button type="button" class="btn-hide" data-field="mini_testimonial_1" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <input type="text" id="mini_testimonial_1" name="mini_testimonial_1" placeholder="Eindelijk een systeem dat werkt!">
+            </div>
           </div>
-          <div class="form-group">
-            <div class="field-header">
-              <label for="mini_testimonial_2">Quote 2</label>
-              <button type="button" class="btn-hide" data-field="mini_testimonial_2" title="Hide in output">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                  <circle cx="12" cy="12" r="3"/>
-                </svg>
-              </button>
+          <div class="subsection-title">Testimonial 2</div>
+          <div class="form-row">
+            <div class="form-group" style="flex: 0 0 120px;">
+              <div class="field-header">
+                <label for="mini_testimonial_avatar_2">Avatar URL</label>
+              </div>
+              <input type="text" id="mini_testimonial_avatar_2" name="mini_testimonial_avatar_2" placeholder="https://...">
             </div>
-            <input type="text" id="mini_testimonial_2" name="mini_testimonial_2" placeholder="Onze omzet is verdubbeld.">
+            <div class="form-group" style="flex: 1;">
+              <div class="field-header">
+                <label for="mini_testimonial_2">Quote</label>
+                <button type="button" class="btn-hide" data-field="mini_testimonial_2" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <input type="text" id="mini_testimonial_2" name="mini_testimonial_2" placeholder="Onze omzet is verdubbeld.">
+            </div>
           </div>
-          <div class="form-group">
-            <div class="field-header">
-              <label for="mini_testimonial_3">Quote 3</label>
-              <button type="button" class="btn-hide" data-field="mini_testimonial_3" title="Hide in output">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                  <circle cx="12" cy="12" r="3"/>
-                </svg>
-              </button>
+          <div class="subsection-title">Testimonial 3</div>
+          <div class="form-row">
+            <div class="form-group" style="flex: 0 0 120px;">
+              <div class="field-header">
+                <label for="mini_testimonial_avatar_3">Avatar URL</label>
+              </div>
+              <input type="text" id="mini_testimonial_avatar_3" name="mini_testimonial_avatar_3" placeholder="https://...">
             </div>
-            <input type="text" id="mini_testimonial_3" name="mini_testimonial_3" placeholder="Beste investering dit jaar.">
+            <div class="form-group" style="flex: 1;">
+              <div class="field-header">
+                <label for="mini_testimonial_3">Quote</label>
+                <button type="button" class="btn-hide" data-field="mini_testimonial_3" title="Hide in output">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                </button>
+              </div>
+              <input type="text" id="mini_testimonial_3" name="mini_testimonial_3" placeholder="Beste investering dit jaar.">
+            </div>
           </div>
         </div>
       </div>
@@ -467,6 +546,9 @@
       <!-- PROCESS STEPS SECTION -->
       <div class="section collapsed" data-section-id="process_steps">
         <div class="section-header">
+          <span class="section-drag-handle" title="Drag to reorder">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 15h18v-2H3v2zm0 4h18v-2H3v2zm0-8h18V9H3v2zm0-6v2h18V5H3z"/></svg>
+          </span>
           <h2>Process Steps</h2>
           <div class="section-header-controls">
             <button type="button" class="btn-section-hide" data-section="process_steps" title="Hide entire section in output">
@@ -630,6 +712,9 @@
       <!-- REVIEWS SECTION -->
       <div class="section collapsed" data-section-id="google_reviews">
         <div class="section-header">
+          <span class="section-drag-handle" title="Drag to reorder">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 15h18v-2H3v2zm0 4h18v-2H3v2zm0-8h18V9H3v2zm0-6v2h18V5H3z"/></svg>
+          </span>
           <h2>Google Reviews (6 Cards)</h2>
           <div class="section-header-controls">
             <button type="button" class="btn-section-hide" data-section="google_reviews" title="Hide entire section in output">
@@ -643,6 +728,32 @@
           </div>
         </div>
         <div class="section-content">
+          <!-- Google Reviews Badge -->
+          <div class="subsection-title">Floating Badge (Bottom Right)</div>
+          <div class="item-group">
+            <div class="two-column">
+              <div class="form-group">
+                <div class="field-header">
+                  <label for="google_rating">Rating</label>
+                </div>
+                <input type="text" id="google_rating" name="google_rating" placeholder="5.0">
+              </div>
+              <div class="form-group">
+                <div class="field-header">
+                  <label for="google_review_count">Review Count</label>
+                </div>
+                <input type="text" id="google_review_count" name="google_review_count" placeholder="35">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="field-header">
+                <label for="google_reviews_url">Google Maps/Business URL</label>
+              </div>
+              <input type="url" id="google_reviews_url" name="google_reviews_url" placeholder="https://maps.google.com/...">
+              <p class="help-text" style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">Leave empty to hide badge. Badge appears in bottom-right corner.</p>
+            </div>
+          </div>
+
           <!-- Review 1 -->
           <div class="subsection-title">Review 1</div>
           <div class="item-group">
@@ -894,6 +1005,9 @@
       <!-- VIDEO TESTIMONIALS SECTION -->
       <div class="section collapsed" data-section-id="video_testimonials">
         <div class="section-header">
+          <span class="section-drag-handle" title="Drag to reorder">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 15h18v-2H3v2zm0 4h18v-2H3v2zm0-8h18V9H3v2zm0-6v2h18V5H3z"/></svg>
+          </span>
           <h2>Video Testimonials (3 Cards)</h2>
           <div class="section-header-controls">
             <button type="button" class="btn-section-hide" data-section="video_testimonials" title="Hide entire section in output">
@@ -1112,6 +1226,9 @@
       <!-- FOOTER SECTION -->
       <div class="section collapsed" data-section-id="footer_cta">
         <div class="section-header">
+          <span class="section-drag-handle" title="Drag to reorder">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 15h18v-2H3v2zm0 4h18v-2H3v2zm0-8h18V9H3v2zm0-6v2h18V5H3z"/></svg>
+          </span>
           <h2>Footer CTA</h2>
           <div class="section-header-controls">
             <button type="button" class="btn-section-hide" data-section="footer_cta" title="Hide entire section in output">
@@ -1149,33 +1266,89 @@
             </div>
             <textarea id="footer_subheadline" name="footer_subheadline" placeholder="Plan een vrijblijvend gesprek en ontdek hoe wij jouw klantverhalen omzetten in een conversiemachine."></textarea>
           </div>
+        </div>
+      </div>
 
-          <div class="subsection-title">Copyright</div>
-          <div class="form-row">
-            <div class="form-group">
-              <div class="field-header">
-                <label for="company_name">Company Name</label>
-                <button type="button" class="btn-hide" data-field="company_name" title="Hide in output">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                    <circle cx="12" cy="12" r="3"/>
-                  </svg>
-                </button>
-              </div>
-              <input type="text" id="company_name" name="company_name" placeholder="TESTIMOTION">
+      <!-- FAQ SECTION -->
+      <div class="section collapsed" data-section-id="faq">
+        <div class="section-header">
+          <span class="section-drag-handle" title="Drag to reorder">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 15h18v-2H3v2zm0 4h18v-2H3v2zm0-8h18V9H3v2zm0-6v2h18V5H3z"/></svg>
+          </span>
+          <h2>FAQ Section</h2>
+          <div class="section-header-controls">
+            <button type="button" class="btn-section-hide" data-section="faq" title="Hide entire section in output">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              Hide
+            </button>
+            <span class="toggle-icon">&#9662;</span>
+          </div>
+        </div>
+        <div class="section-content">
+          <div class="form-group">
+            <div class="field-header">
+              <label for="faq_headline">Section Headline</label>
+              <button type="button" class="btn-hide" data-field="faq_headline" title="Hide in output">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
             </div>
-            <div class="form-group">
-              <div class="field-header">
-                <label for="copyright_text">Copyright Text</label>
-                <button type="button" class="btn-hide" data-field="copyright_text" title="Hide in output">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                    <circle cx="12" cy="12" r="3"/>
-                  </svg>
-                </button>
-              </div>
-              <input type="text" id="copyright_text" name="copyright_text" placeholder="Alle rechten voorbehouden.">
-            </div>
+            <input type="text" id="faq_headline" name="faq_headline" placeholder="Veelgestelde vragen">
+          </div>
+
+          <div class="subsection-title">Question 1</div>
+          <div class="form-group">
+            <label for="faq_question_1">Question</label>
+            <input type="text" id="faq_question_1" name="faq_question_1" placeholder="Hoe werkt het proces precies?">
+          </div>
+          <div class="form-group">
+            <label for="faq_answer_1">Answer</label>
+            <textarea id="faq_answer_1" name="faq_answer_1" placeholder="Ons proces bestaat uit drie stappen..."></textarea>
+          </div>
+
+          <div class="subsection-title">Question 2</div>
+          <div class="form-group">
+            <label for="faq_question_2">Question</label>
+            <input type="text" id="faq_question_2" name="faq_question_2" placeholder="Wat is inbegrepen in het pakket?">
+          </div>
+          <div class="form-group">
+            <label for="faq_answer_2">Answer</label>
+            <textarea id="faq_answer_2" name="faq_answer_2" placeholder="Je krijgt professionele video-interviews..."></textarea>
+          </div>
+
+          <div class="subsection-title">Question 3</div>
+          <div class="form-group">
+            <label for="faq_question_3">Question</label>
+            <input type="text" id="faq_question_3" name="faq_question_3" placeholder="Wat als mijn klanten niet willen meewerken?">
+          </div>
+          <div class="form-group">
+            <label for="faq_answer_3">Answer</label>
+            <textarea id="faq_answer_3" name="faq_answer_3" placeholder="Wij helpen je met het benaderen van klanten..."></textarea>
+          </div>
+
+          <div class="subsection-title">Question 4</div>
+          <div class="form-group">
+            <label for="faq_question_4">Question</label>
+            <input type="text" id="faq_question_4" name="faq_question_4" placeholder="Hoeveel kost het en wat is de ROI?">
+          </div>
+          <div class="form-group">
+            <label for="faq_answer_4">Answer</label>
+            <textarea id="faq_answer_4" name="faq_answer_4" placeholder="De investering varieert per pakket..."></textarea>
+          </div>
+
+          <div class="subsection-title">Question 5</div>
+          <div class="form-group">
+            <label for="faq_question_5">Question</label>
+            <input type="text" id="faq_question_5" name="faq_question_5" placeholder="Hoe lang duurt het voordat alles klaar is?">
+          </div>
+          <div class="form-group">
+            <label for="faq_answer_5">Answer</label>
+            <textarea id="faq_answer_5" name="faq_answer_5" placeholder="Gemiddeld is alles binnen 2-4 weken klaar..."></textarea>
           </div>
         </div>
       </div>
@@ -1183,6 +1356,9 @@
       <!-- CLIENT LOGOS SECTION -->
       <div class="section collapsed" data-section-id="client_logos">
         <div class="section-header">
+          <span class="section-drag-handle" title="Drag to reorder">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 15h18v-2H3v2zm0 4h18v-2H3v2zm0-8h18V9H3v2zm0-6v2h18V5H3z"/></svg>
+          </span>
           <h2>Client Logos</h2>
           <div class="section-header-controls">
             <button type="button" class="btn-section-hide" data-section="client_logos" title="Hide entire section in output">
@@ -1244,6 +1420,55 @@
             </div>
             <input type="url" id="client_logo_4" name="client_logo_4" placeholder="https://example.com/client4.png">
           </div>
+          <div class="form-group">
+            <div class="field-header">
+              <label for="client_logo_5">Logo 5 URL</label>
+              <button type="button" class="btn-hide" data-field="client_logo_5" title="Hide in output">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <input type="url" id="client_logo_5" name="client_logo_5" placeholder="https://example.com/client5.png">
+          </div>
+          <div class="form-group">
+            <div class="field-header">
+              <label for="client_logo_6">Logo 6 URL</label>
+              <button type="button" class="btn-hide" data-field="client_logo_6" title="Hide in output">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <input type="url" id="client_logo_6" name="client_logo_6" placeholder="https://example.com/client6.png">
+          </div>
+          <div class="form-group">
+            <div class="field-header">
+              <label for="client_logo_7">Logo 7 URL</label>
+              <button type="button" class="btn-hide" data-field="client_logo_7" title="Hide in output">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <input type="url" id="client_logo_7" name="client_logo_7" placeholder="https://example.com/client7.png">
+          </div>
+          <div class="form-group">
+            <div class="field-header">
+              <label for="client_logo_8">Logo 8 URL</label>
+              <button type="button" class="btn-hide" data-field="client_logo_8" title="Hide in output">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
+                </svg>
+              </button>
+            </div>
+            <input type="url" id="client_logo_8" name="client_logo_8" placeholder="https://example.com/client8.png">
+          </div>
+          <p class="help-text" style="color: var(--text-muted); font-size: 0.85rem; margin-top: 0.5rem;">Logos scroll continuously. Add as many as needed.</p>
         </div>
       </div>
 
@@ -1504,6 +1729,35 @@
 
   <!-- Toast Notification -->
   <div id="toast" class="toast"></div>
+
+  <!-- Login Modal -->
+  <div id="login-modal" class="modal-overlay">
+    <div class="modal modal-sm login-modal">
+      <header class="modal-header">
+        <h3>Login</h3>
+        <button id="login-modal-close" class="modal-close">&times;</button>
+      </header>
+      <div class="modal-body">
+        <p class="login-description">Enter your email to receive a login link. This is an invite-only system.</p>
+        <div class="form-group">
+          <label for="login-email">Email Address</label>
+          <input type="email" id="login-email" placeholder="you@example.com" autocomplete="email" autofocus>
+        </div>
+        <div id="login-message" class="login-message"></div>
+      </div>
+      <footer class="modal-footer">
+        <button type="button" id="btn-send-magic-link" class="btn btn-primary">
+          <span class="btn-text">Send Login Link</span>
+          <span class="btn-loading" style="display: none;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16" class="spin">
+              <circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="12"/>
+            </svg>
+            Sending...
+          </span>
+        </button>
+      </footer>
+    </div>
+  </div>
 
   <script type="module" src="app.js"></script>
 </body>

@@ -32,10 +32,13 @@ export const DEFAULTS = {
   trust_badge_photo_4: 'https://i.pravatar.cc/80?img=12',
   trust_badge_photo_5: 'https://i.pravatar.cc/80?img=15',
 
-  // Mini Testimonials
+  // Mini Testimonials (small avatar + quote)
   mini_testimonial_1: 'Eindelijk een systeem dat werkt!',
   mini_testimonial_2: 'Onze omzet is verdubbeld.',
   mini_testimonial_3: 'Beste investering dit jaar.',
+  mini_testimonial_avatar_1: 'https://i.pravatar.cc/48?img=32',
+  mini_testimonial_avatar_2: 'https://i.pravatar.cc/48?img=47',
+  mini_testimonial_avatar_3: 'https://i.pravatar.cc/48?img=51',
 
   // Process Steps
   process_headline: 'Hoe wij in 4 stappen klantverhalen omzetten naar omzet',
@@ -49,6 +52,11 @@ export const DEFAULTS = {
   step_3_description: 'Alles komt samen op een krachtige landingspagina die bezoekers omzet in klanten.',
   step_image_3: 'https://placehold.co/400x300/1a1a1a/ffffff?text=Step+3%0APage',
   guarantee_text: '100% tevredenheidsgarantie - Geen resultaat? Geld terug.',
+
+  // Google Reviews Badge
+  google_rating: '5.0',
+  google_review_count: '35',
+  google_reviews_url: '',  // Leave empty to hide badge
 
   // Google Reviews - Avatar placeholders
   review_name_1: 'Peter de Vries',
@@ -91,17 +99,28 @@ export const DEFAULTS = {
   footer_headline: 'Klaar om je klanten voor je te laten verkopen?',
   footer_subheadline: 'Plan een vrijblijvend gesprek en ontdek hoe wij jouw klantverhalen omzetten in een conversiemachine.',
 
-  // Client Logos - Business logo placeholders
+  // FAQ Section
+  faq_headline: 'Veelgestelde vragen',
+  faq_question_1: 'Hoe werkt het proces precies?',
+  faq_answer_1: 'Ons proces bestaat uit drie stappen: eerst verzamelen we klantverhalen via interviews, dan structureren we deze tot overtuigende cases, en tot slot presenteren we alles op een professionele landingspagina die converteert.',
+  faq_question_2: 'Wat is inbegrepen in het pakket?',
+  faq_answer_2: 'Je krijgt professionele video-interviews, geschreven testimonials, een volledig ingerichte landingspagina, en alle bestanden in hoge kwaliteit voor eigen gebruik.',
+  faq_question_3: 'Wat als mijn klanten niet willen meewerken?',
+  faq_answer_3: 'Wij helpen je met het benaderen van klanten en maken het proces zo makkelijk mogelijk. De meeste klanten zijn vereerd om gevraagd te worden en werken graag mee.',
+  faq_question_4: 'Hoeveel kost het en wat is de ROI?',
+  faq_answer_4: 'De investering varieert per pakket. De meeste klanten verdienen hun investering binnen 2-3 maanden terug door hogere conversies en meer vertrouwen bij prospects.',
+  faq_question_5: 'Hoe lang duurt het voordat alles klaar is?',
+  faq_answer_5: 'Gemiddeld is alles binnen 2-4 weken klaar, afhankelijk van de beschikbaarheid van je klanten voor interviews. Wij zorgen voor een soepele planning.',
+
+  // Client Logos - Business logo placeholders (auto-scrolling marquee)
   client_logo_1: 'https://placehold.co/150x50/1a1a1a/ffffff?text=Client+1',
   client_logo_2: 'https://placehold.co/150x50/1a1a1a/ffffff?text=Client+2',
   client_logo_3: 'https://placehold.co/150x50/1a1a1a/ffffff?text=Client+3',
   client_logo_4: 'https://placehold.co/150x50/1a1a1a/ffffff?text=Client+4',
-
-  current_year: '2025',
-
-  // Footer copyright
-  company_name: 'TESTIMOTION',
-  copyright_text: 'Alle rechten voorbehouden.',
+  client_logo_5: 'https://placehold.co/150x50/1a1a1a/ffffff?text=Client+5',
+  client_logo_6: 'https://placehold.co/150x50/1a1a1a/ffffff?text=Client+6',
+  client_logo_7: '',
+  client_logo_8: '',
 
   // Optional floating testimonial fields
   testimonial_name: 'Jan Willem Addink',

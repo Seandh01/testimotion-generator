@@ -1,8 +1,24 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI } from '@google/genai';
 import * as cheerio from 'cheerio';
 
+function friendlyError(error) {
+  const msg = error.message || '';
+  if (msg.includes('"code":429') || msg.includes('RESOURCE_EXHAUSTED')) {
+    return 'Too many requests. Please wait a moment and try again.';
+  }
+  if (msg.includes('"code":500') || msg.includes('INTERNAL')) {
+    return 'AI service temporarily unavailable. Please try again.';
+  }
+  if (msg.includes('"code":403') || msg.includes('PERMISSION_DENIED')) {
+    return 'API key error. Please check configuration.';
+  }
+  if (msg.startsWith('{') || msg.startsWith('[')) {
+    return 'AI analysis failed. Please try again.';
+  }
+  return msg;
+}
+
 export default async function handler(req, res) {
-  // Only allow POST
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
   }
@@ -35,9 +51,7 @@ export default async function handler(req, res) {
       console.log('Could not fetch website, continuing without context');
     }
 
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-
+    const ai = new GoogleGenAI({ apiKey });
     const langName = language === 'nl' ? 'Dutch' : 'English';
 
     const copyPrompt = `Generate landing page copy in ${langName} for this business:
@@ -68,8 +82,12 @@ Return ONLY valid JSON with these fields:
   "footer_subheadline": "footer CTA subtext"
 }`;
 
-    const result = await model.generateContent(copyPrompt);
-    const text = result.response.text();
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.0-flash',
+      contents: copyPrompt
+    });
+
+    const text = response.text;
 
     const jsonMatch = text.match(/\{[\s\S]*\}/);
     const copyData = jsonMatch ? JSON.parse(jsonMatch[0]) : {};
@@ -82,6 +100,6 @@ Return ONLY valid JSON with these fields:
 
   } catch (error) {
     console.error('Copy generation error:', error);
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ error: friendlyError(error) });
   }
 }

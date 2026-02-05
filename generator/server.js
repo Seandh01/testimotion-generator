@@ -5,8 +5,9 @@ import { v4 as uuidv4 } from 'uuid';
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { extractBrandFromURL } from './brand-extractor.js';
 import { generateLandingPageCopy } from './copywriting-generator.js';
+import extractBrandHandler from './api/extract-brand.js';
+import fontsHandler from './api/fonts.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -146,29 +147,10 @@ app.delete('/api/history/:clientId/:versionId', async (req, res) => {
 });
 
 // POST /api/extract-brand - Extract brand colors from URL
-app.post('/api/extract-brand', async (req, res) => {
-  try {
-    const { url } = req.body;
+app.post('/api/extract-brand', extractBrandHandler);
 
-    if (!url) {
-      return res.status(400).json({ error: 'URL is required' });
-    }
-
-    // Validate URL format
-    try {
-      new URL(url);
-    } catch {
-      return res.status(400).json({ error: 'Invalid URL format' });
-    }
-
-    console.log(`Extracting brand from: ${url}`);
-    const brandData = await extractBrandFromURL(url);
-    res.json(brandData);
-  } catch (err) {
-    console.error('Brand extraction error:', err);
-    res.status(500).json({ error: 'Failed to extract brand data', details: err.message });
-  }
-});
+// GET /api/fonts - Google Fonts proxy
+app.get('/api/fonts', fontsHandler);
 
 // POST /api/generate-copy - Generate landing page copy with AI
 app.post('/api/generate-copy', async (req, res) => {

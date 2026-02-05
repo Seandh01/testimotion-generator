@@ -65,7 +65,7 @@ function getVideoGridClasses(filledCount, videoFormat = 'landscape') {
 }
 
 // Generate Google Fonts link if using web fonts
-function generateGoogleFontsLink(headingFont, bodyFont) {
+function generateGoogleFontsLink(headingFont, bodyFont, headingWeight = '600', bodyWeight = '400') {
   const systemFonts = [
     'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI',
     'Roboto', 'Helvetica Neue', 'Arial', 'Helvetica', 'sans-serif',
@@ -76,25 +76,36 @@ function generateGoogleFontsLink(headingFont, bodyFont) {
   function extractFontName(fontStack) {
     if (!fontStack) return null;
     const primary = fontStack.split(',')[0].trim().replace(/['"]/g, '');
-    // Check if it's a system font
     if (systemFonts.some(sf => primary.toLowerCase() === sf.toLowerCase())) {
       return null;
     }
     return primary;
   }
 
+  // Build weight list including 400 as baseline plus the selected weight
+  function buildWeights(selectedWeight) {
+    const weights = new Set(['400']);
+    if (selectedWeight) weights.add(selectedWeight);
+    // Always include a few common weights for flexibility
+    weights.add('500');
+    weights.add('600');
+    weights.add('700');
+    return [...weights].sort().join(';');
+  }
+
   const headingName = extractFontName(headingFont);
   const bodyName = extractFontName(bodyFont);
 
-  // Collect unique font names
-  const fonts = [];
-  if (headingName) fonts.push(headingName);
-  if (bodyName && bodyName !== headingName) fonts.push(bodyName);
+  // Collect unique font entries
+  const fontEntries = [];
+  if (headingName) fontEntries.push({ name: headingName, weights: buildWeights(headingWeight) });
+  if (bodyName && bodyName !== headingName) fontEntries.push({ name: bodyName, weights: buildWeights(bodyWeight) });
 
-  if (fonts.length === 0) return '';
+  if (fontEntries.length === 0) return '';
 
-  // Build Google Fonts URL
-  const families = fonts.map(f => `family=${encodeURIComponent(f).replace(/%20/g, '+')}:wght@400;500;600;700`).join('&');
+  const families = fontEntries
+    .map(f => `family=${encodeURIComponent(f.name).replace(/%20/g, '+')}:wght@${f.weights}`)
+    .join('&');
   return `<link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?${families}&display=swap" rel="stylesheet">`;
@@ -123,7 +134,9 @@ export function generateTemplate(values, filledVideoCount = 3) {
   // Generate Google Fonts link if needed
   const headingFont = v('heading_font', 'system-ui, -apple-system, sans-serif');
   const bodyFont = v('body_font', 'system-ui, -apple-system, sans-serif');
-  const googleFontsLink = generateGoogleFontsLink(headingFont, bodyFont);
+  const headingWeight = v('_headingWeight', '600');
+  const bodyWeight = v('_bodyWeight', '400');
+  const googleFontsLink = generateGoogleFontsLink(headingFont, bodyFont, headingWeight, bodyWeight);
 
   // Get border radius value
   const borderRadius = v('border_radius', '16');
@@ -254,6 +267,212 @@ export function generateTemplate(values, filledVideoCount = 3) {
       outline-offset: 4px;
     }
 
+    /* Client Logos Marquee */
+    .logo-marquee-container {
+      overflow: hidden;
+      mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+      -webkit-mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);
+    }
+
+    .logo-marquee-track {
+      display: flex;
+      gap: 3rem;
+      animation: marquee-scroll 30s linear infinite;
+      width: max-content;
+    }
+
+    .logo-marquee-track:hover {
+      animation-play-state: paused;
+    }
+
+    @keyframes marquee-scroll {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-50%);
+      }
+    }
+
+    .logo-marquee-item {
+      flex-shrink: 0;
+      opacity: 0.7;
+      transition: opacity 0.3s;
+    }
+
+    .logo-marquee-item:hover {
+      opacity: 1;
+    }
+
+    /* Reviews Section Gradient Fade */
+    .reviews-section-gradient {
+      position: relative;
+    }
+
+    .reviews-section-gradient::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        transparent 0%,
+        rgba(255, 255, 255, 0.03) 15%,
+        rgba(255, 255, 255, 0.05) 50%,
+        rgba(255, 255, 255, 0.03) 85%,
+        transparent 100%
+      );
+      pointer-events: none;
+    }
+
+    /* Reviews Slider */
+    .reviews-slider-container {
+      position: relative;
+    }
+
+    .reviews-slider {
+      display: flex;
+      gap: 1.5rem;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-behavior: smooth;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      padding-bottom: 0.5rem;
+    }
+
+    .reviews-slider::-webkit-scrollbar {
+      display: none;
+    }
+
+    .reviews-slider .google-review-card {
+      flex: 0 0 calc(100% - 1rem);
+      scroll-snap-align: start;
+    }
+
+    @media (min-width: 768px) {
+      .reviews-slider .google-review-card {
+        flex: 0 0 calc(50% - 0.75rem);
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .reviews-slider .google-review-card {
+        flex: 0 0 calc(33.333% - 1rem);
+      }
+    }
+
+    .reviews-slider-nav {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .reviews-slider-arrow {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .reviews-slider-arrow:hover {
+      background: rgba(255, 255, 255, 0.2);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+
+    .reviews-slider-arrow:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    .reviews-slider-dots {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .reviews-slider-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .reviews-slider-dot.active {
+      background: var(--brand-primary);
+      transform: scale(1.25);
+    }
+
+    .reviews-slider-dot:hover {
+      background: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Google Reviews Badge */
+    .google-reviews-badge {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: white;
+      border-radius: 12px;
+      padding: 12px 16px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      z-index: 100;
+    }
+
+    .google-reviews-badge:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+    }
+
+    .google-badge-logo {
+      width: 32px;
+      height: 32px;
+    }
+
+    .google-badge-content {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .google-badge-rating {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .google-badge-rating-number {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: #1a1a1a;
+    }
+
+    .google-badge-stars {
+      color: #FBBC04;
+      font-size: 0.9rem;
+    }
+
+    .google-badge-count {
+      font-size: 0.75rem;
+      color: #666;
+    }
+
     @media (min-width: 1280px) {
       .floating-testimonial.show {
         display: block;
@@ -272,7 +491,7 @@ export function generateTemplate(values, filledVideoCount = 3) {
   <!-- ================================================== -->
   <!-- SECTION 1: HERO -->
   <!-- ================================================== -->
-  <section class="relative overflow-hidden">
+  <section class="relative overflow-hidden" data-section="hero">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-16">
 
       <!-- Logo - Responsive sizing -->
@@ -285,19 +504,37 @@ export function generateTemplate(values, filledVideoCount = 3) {
         >
       </div>
 
-      <!-- Mini Testimonials Row - NO IMAGES, just stars + quoted text -->
-      <div class="flex flex-wrap justify-center items-center gap-4 md:gap-8 mb-10" data-section="mini_testimonials">
-        <div class="flex items-center gap-2">
-          <span class="star-rating text-lg">★★★★★</span>
-          <span class="text-white text-sm" data-ghl-token="mini_testimonial_1">"${v('mini_testimonial_1', 'Eindelijk een systeem dat werkt!')}"</span>
+      <!-- Mini Testimonials Row - Subtle design with small avatars -->
+      <div class="flex flex-wrap justify-center items-center gap-6 md:gap-10 mb-8" data-section="mini_testimonials">
+        <div class="flex items-center gap-2.5">
+          <img
+            src="${v('mini_testimonial_avatar_1', 'https://i.pravatar.cc/48?img=32')}"
+            alt=""
+            class="w-6 h-6 rounded-full object-cover border border-white/20"
+            data-ghl-token="mini_testimonial_avatar_1"
+          >
+          <span class="star-rating text-xs">★★★★★</span>
+          <span class="text-white/80 text-xs" data-ghl-token="mini_testimonial_1">"${v('mini_testimonial_1', 'Eindelijk een systeem dat werkt!')}"</span>
         </div>
-        <div class="flex items-center gap-2">
-          <span class="star-rating text-lg">★★★★★</span>
-          <span class="text-white text-sm" data-ghl-token="mini_testimonial_2">"${v('mini_testimonial_2', 'Onze omzet is verdubbeld.')}"</span>
+        <div class="flex items-center gap-2.5">
+          <img
+            src="${v('mini_testimonial_avatar_2', 'https://i.pravatar.cc/48?img=47')}"
+            alt=""
+            class="w-6 h-6 rounded-full object-cover border border-white/20"
+            data-ghl-token="mini_testimonial_avatar_2"
+          >
+          <span class="star-rating text-xs">★★★★★</span>
+          <span class="text-white/80 text-xs" data-ghl-token="mini_testimonial_2">"${v('mini_testimonial_2', 'Onze omzet is verdubbeld.')}"</span>
         </div>
-        <div class="flex items-center gap-2">
-          <span class="star-rating text-lg">★★★★★</span>
-          <span class="text-white text-sm" data-ghl-token="mini_testimonial_3">"${v('mini_testimonial_3', 'Beste investering dit jaar.')}"</span>
+        <div class="flex items-center gap-2.5">
+          <img
+            src="${v('mini_testimonial_avatar_3', 'https://i.pravatar.cc/48?img=51')}"
+            alt=""
+            class="w-6 h-6 rounded-full object-cover border border-white/20"
+            data-ghl-token="mini_testimonial_avatar_3"
+          >
+          <span class="star-rating text-xs">★★★★★</span>
+          <span class="text-white/80 text-xs" data-ghl-token="mini_testimonial_3">"${v('mini_testimonial_3', 'Beste investering dit jaar.')}"</span>
         </div>
       </div>
 
@@ -350,12 +587,14 @@ export function generateTemplate(values, filledVideoCount = 3) {
         </div>
       </div>
 
-      <!-- Client Logos Row -->
-      <div class="flex flex-wrap justify-center items-center gap-8 md:gap-12 pt-4" data-section="client_logos">
-        <span data-ghl-container><img src="${v('client_logo_1')}" alt="Client Logo" class="h-8 md:h-10 lg:h-12 opacity-70" data-ghl-token="client_logo_1"></span>
-        <span data-ghl-container><img src="${v('client_logo_2')}" alt="Client Logo" class="h-8 md:h-10 lg:h-12 opacity-70" data-ghl-token="client_logo_2"></span>
-        <span data-ghl-container><img src="${v('client_logo_3')}" alt="Client Logo" class="h-8 md:h-10 lg:h-12 opacity-70" data-ghl-token="client_logo_3"></span>
-        <span data-ghl-container><img src="${v('client_logo_4')}" alt="Client Logo" class="h-8 md:h-10 lg:h-12 opacity-70" data-ghl-token="client_logo_4"></span>
+      <!-- Client Logos Marquee -->
+      <div class="logo-marquee-container pt-4" data-section="client_logos">
+        <div class="logo-marquee-track">
+          <!-- First set of logos -->
+          ${[1,2,3,4,5,6,7,8].map(i => v(`client_logo_${i}`) ? `<img src="${v(`client_logo_${i}`)}" alt="Client Logo" class="logo-marquee-item h-8 md:h-10 lg:h-12" data-ghl-token="client_logo_${i}">` : '').join('')}
+          <!-- Duplicate set for seamless loop -->
+          ${[1,2,3,4,5,6,7,8].map(i => v(`client_logo_${i}`) ? `<img src="${v(`client_logo_${i}`)}" alt="Client Logo" class="logo-marquee-item h-8 md:h-10 lg:h-12" aria-hidden="true">` : '').join('')}
+        </div>
       </div>
 
     </div>
@@ -481,7 +720,7 @@ export function generateTemplate(values, filledVideoCount = 3) {
   <!-- ================================================== -->
   <!-- SECTION 3: REVIEWS -->
   <!-- ================================================== -->
-  <section class="py-16 md:py-24" style="background: rgba(255, 255, 255, 0.05);" data-section="google_reviews">
+  <section class="py-16 md:py-24 reviews-section-gradient" data-section="google_reviews">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
       <!-- Trust Header -->
@@ -496,141 +735,156 @@ export function generateTemplate(values, filledVideoCount = 3) {
         </p>
       </div>
 
-      <!-- Google Review Cards Grid (3x2 layout) -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-
-        <!-- Review 1 -->
-        <div class="google-review-card" data-ghl-container>
-          <div class="flex items-center gap-3 mb-4">
-            <img
-              src="${v('review_avatar_1')}"
-              alt="Reviewer"
-              class="w-12 h-12 rounded-full object-cover"
-              data-ghl-token="review_avatar_1"
-            >
-            <div>
-              <p class="font-bold text-black">${v('review_name_1', 'Peter de Vries')}</p>
-              <div class="flex items-center gap-2">
-                <img src="https://www.google.com/favicon.ico" alt="Google" class="w-4 h-4">
-                <span class="star-rating text-sm">★★★★★</span>
+      <!-- Google Review Cards Slider -->
+      <div class="reviews-slider-container mb-16">
+        <div class="reviews-slider" id="reviewsSlider">
+          <!-- Review 1 -->
+          <div class="google-review-card" data-ghl-container>
+            <div class="flex items-center gap-3 mb-4">
+              <img
+                src="${v('review_avatar_1')}"
+                alt="Reviewer"
+                class="w-12 h-12 rounded-full object-cover"
+                data-ghl-token="review_avatar_1"
+              >
+              <div>
+                <p class="font-bold text-black">${v('review_name_1', 'Peter de Vries')}</p>
+                <div class="flex items-center gap-2">
+                  <img src="https://www.google.com/favicon.ico" alt="Google" class="w-4 h-4">
+                  <span class="star-rating text-sm">★★★★★</span>
+                </div>
               </div>
             </div>
+            <p class="text-gray-700">
+              "${v('review_text_1', 'Professionele aanpak en geweldig resultaat. Onze testimonial pagina converteert nu 3x beter.')}"
+            </p>
           </div>
-          <p class="text-gray-700">
-            "${v('review_text_1', 'Professionele aanpak en geweldig resultaat. Onze testimonial pagina converteert nu 3x beter.')}"
-          </p>
-        </div>
 
-        <!-- Review 2 -->
-        <div class="google-review-card" data-ghl-container>
-          <div class="flex items-center gap-3 mb-4">
-            <img
-              src="${v('review_avatar_2')}"
-              alt="Reviewer"
-              class="w-12 h-12 rounded-full object-cover"
-              data-ghl-token="review_avatar_2"
-            >
-            <div>
-              <p class="font-bold text-black">${v('review_name_2', 'Maria Jansen')}</p>
-              <div class="flex items-center gap-2">
-                <img src="https://www.google.com/favicon.ico" alt="Google" class="w-4 h-4">
-                <span class="star-rating text-sm">★★★★★</span>
+          <!-- Review 2 -->
+          <div class="google-review-card" data-ghl-container>
+            <div class="flex items-center gap-3 mb-4">
+              <img
+                src="${v('review_avatar_2')}"
+                alt="Reviewer"
+                class="w-12 h-12 rounded-full object-cover"
+                data-ghl-token="review_avatar_2"
+              >
+              <div>
+                <p class="font-bold text-black">${v('review_name_2', 'Maria Jansen')}</p>
+                <div class="flex items-center gap-2">
+                  <img src="https://www.google.com/favicon.ico" alt="Google" class="w-4 h-4">
+                  <span class="star-rating text-sm">★★★★★</span>
+                </div>
               </div>
             </div>
+            <p class="text-gray-700">
+              "${v('review_text_2', 'Eindelijk een partij die snapt hoe je klantverhalen moet inzetten. Absolute aanrader!')}"
+            </p>
           </div>
-          <p class="text-gray-700">
-            "${v('review_text_2', 'Eindelijk een partij die snapt hoe je klantverhalen moet inzetten. Absolute aanrader!')}"
-          </p>
-        </div>
 
-        <!-- Review 3 -->
-        <div class="google-review-card" data-ghl-container>
-          <div class="flex items-center gap-3 mb-4">
-            <img
-              src="${v('review_avatar_3')}"
-              alt="Reviewer"
-              class="w-12 h-12 rounded-full object-cover"
-              data-ghl-token="review_avatar_3"
-            >
-            <div>
-              <p class="font-bold text-black">${v('review_name_3', 'Thomas van Dijk')}</p>
-              <div class="flex items-center gap-2">
-                <img src="https://www.google.com/favicon.ico" alt="Google" class="w-4 h-4">
-                <span class="star-rating text-sm">★★★★★</span>
+          <!-- Review 3 -->
+          <div class="google-review-card" data-ghl-container>
+            <div class="flex items-center gap-3 mb-4">
+              <img
+                src="${v('review_avatar_3')}"
+                alt="Reviewer"
+                class="w-12 h-12 rounded-full object-cover"
+                data-ghl-token="review_avatar_3"
+              >
+              <div>
+                <p class="font-bold text-black">${v('review_name_3', 'Thomas van Dijk')}</p>
+                <div class="flex items-center gap-2">
+                  <img src="https://www.google.com/favicon.ico" alt="Google" class="w-4 h-4">
+                  <span class="star-rating text-sm">★★★★★</span>
+                </div>
               </div>
             </div>
+            <p class="text-gray-700">
+              "${v('review_text_3', 'ROI binnen 2 maanden terugverdiend. De video testimonials maken echt het verschil.')}"
+            </p>
           </div>
-          <p class="text-gray-700">
-            "${v('review_text_3', 'ROI binnen 2 maanden terugverdiend. De video testimonials maken echt het verschil.')}"
-          </p>
-        </div>
 
-        <!-- Review 4 -->
-        <div class="google-review-card" data-ghl-container>
-          <div class="flex items-center gap-3 mb-4">
-            <img
-              src="${v('review_avatar_4')}"
-              alt="Reviewer"
-              class="w-12 h-12 rounded-full object-cover"
-              data-ghl-token="review_avatar_4"
-            >
-            <div>
-              <p class="font-bold text-black">${v('review_name_4', 'Lisa van den Berg')}</p>
-              <div class="flex items-center gap-2">
-                <img src="https://www.google.com/favicon.ico" alt="Google" class="w-4 h-4">
-                <span class="star-rating text-sm">★★★★★</span>
+          <!-- Review 4 -->
+          <div class="google-review-card" data-ghl-container>
+            <div class="flex items-center gap-3 mb-4">
+              <img
+                src="${v('review_avatar_4')}"
+                alt="Reviewer"
+                class="w-12 h-12 rounded-full object-cover"
+                data-ghl-token="review_avatar_4"
+              >
+              <div>
+                <p class="font-bold text-black">${v('review_name_4', 'Lisa van den Berg')}</p>
+                <div class="flex items-center gap-2">
+                  <img src="https://www.google.com/favicon.ico" alt="Google" class="w-4 h-4">
+                  <span class="star-rating text-sm">★★★★★</span>
+                </div>
               </div>
             </div>
+            <p class="text-gray-700">
+              "${v('review_text_4', 'Super tevreden met het resultaat. Klanten komen nu al overtuigd bij ons binnen.')}"
+            </p>
           </div>
-          <p class="text-gray-700">
-            "${v('review_text_4', 'Super tevreden met het resultaat. Klanten komen nu al overtuigd bij ons binnen.')}"
-          </p>
-        </div>
 
-        <!-- Review 5 -->
-        <div class="google-review-card" data-ghl-container>
-          <div class="flex items-center gap-3 mb-4">
-            <img
-              src="${v('review_avatar_5')}"
-              alt="Reviewer"
-              class="w-12 h-12 rounded-full object-cover"
-              data-ghl-token="review_avatar_5"
-            >
-            <div>
-              <p class="font-bold text-black">${v('review_name_5', 'Jan Willem Addink')}</p>
-              <div class="flex items-center gap-2">
-                <img src="https://www.google.com/favicon.ico" alt="Google" class="w-4 h-4">
-                <span class="star-rating text-sm">★★★★★</span>
+          <!-- Review 5 -->
+          <div class="google-review-card" data-ghl-container>
+            <div class="flex items-center gap-3 mb-4">
+              <img
+                src="${v('review_avatar_5')}"
+                alt="Reviewer"
+                class="w-12 h-12 rounded-full object-cover"
+                data-ghl-token="review_avatar_5"
+              >
+              <div>
+                <p class="font-bold text-black">${v('review_name_5', 'Jan Willem Addink')}</p>
+                <div class="flex items-center gap-2">
+                  <img src="https://www.google.com/favicon.ico" alt="Google" class="w-4 h-4">
+                  <span class="star-rating text-sm">★★★★★</span>
+                </div>
               </div>
             </div>
+            <p class="text-gray-700">
+              "${v('review_text_5', 'Door TESTIMOTION hebben we nu een constante stroom van leads die al overtuigd zijn.')}"
+            </p>
           </div>
-          <p class="text-gray-700">
-            "${v('review_text_5', 'Door TESTIMOTION hebben we nu een constante stroom van leads die al overtuigd zijn.')}"
-          </p>
-        </div>
 
-        <!-- Review 6 -->
-        <div class="google-review-card" data-ghl-container>
-          <div class="flex items-center gap-3 mb-4">
-            <img
-              src="${v('review_avatar_6')}"
-              alt="Reviewer"
-              class="w-12 h-12 rounded-full object-cover"
-              data-ghl-token="review_avatar_6"
-            >
-            <div>
-              <p class="font-bold text-black">${v('review_name_6', 'Erik Bakker')}</p>
-              <div class="flex items-center gap-2">
-                <img src="https://www.google.com/favicon.ico" alt="Google" class="w-4 h-4">
-                <span class="star-rating text-sm">★★★★★</span>
+          <!-- Review 6 -->
+          <div class="google-review-card" data-ghl-container>
+            <div class="flex items-center gap-3 mb-4">
+              <img
+                src="${v('review_avatar_6')}"
+                alt="Reviewer"
+                class="w-12 h-12 rounded-full object-cover"
+                data-ghl-token="review_avatar_6"
+              >
+              <div>
+                <p class="font-bold text-black">${v('review_name_6', 'Erik Bakker')}</p>
+                <div class="flex items-center gap-2">
+                  <img src="https://www.google.com/favicon.ico" alt="Google" class="w-4 h-4">
+                  <span class="star-rating text-sm">★★★★★</span>
+                </div>
               </div>
             </div>
+            <p class="text-gray-700">
+              "${v('review_text_6', "Fantastische kwaliteit video's en de hele workflow was super smooth.")}"
+            </p>
           </div>
-          <p class="text-gray-700">
-            "${v('review_text_6', "Fantastische kwaliteit video's en de hele workflow was super smooth.")}"
-          </p>
         </div>
 
+        <!-- Slider Navigation -->
+        <div class="reviews-slider-nav">
+          <button class="reviews-slider-arrow" id="reviewsPrev" aria-label="Previous reviews">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M15 18l-6-6 6-6"/>
+            </svg>
+          </button>
+          <div class="reviews-slider-dots" id="reviewsDots"></div>
+          <button class="reviews-slider-arrow" id="reviewsNext" aria-label="Next reviews">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 18l6-6-6-6"/>
+            </svg>
+          </button>
+        </div>
       </div>
 
       <!-- Video Testimonials Section -->
@@ -648,6 +902,84 @@ export function generateTemplate(values, filledVideoCount = 3) {
 ${videoCards}
       </div>
 
+    </div>
+  </section>
+
+  <!-- ================================================== -->
+  <!-- SECTION: FAQ -->
+  <!-- ================================================== -->
+  <section class="py-16 md:py-24" data-section="faq">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-3xl md:text-4xl font-bold text-white text-center mb-12" data-ghl-token="faq_headline">
+        ${v('faq_headline', 'Veelgestelde vragen')}
+      </h2>
+
+      <div class="faq-accordion space-y-4">
+        <!-- FAQ Item 1 -->
+        <div class="faq-item bg-white/5 rounded-lg border border-white/10" data-ghl-container>
+          <button class="faq-question w-full flex justify-between items-center p-5 text-left" onclick="toggleFaq(this)">
+            <span class="text-white font-medium pr-4" data-ghl-token="faq_question_1">${v('faq_question_1', 'Hoe werkt het proces precies?')}</span>
+            <svg class="faq-icon w-5 h-5 text-white/60 flex-shrink-0 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div class="faq-answer hidden px-5 pb-5">
+            <p class="text-white/70 text-sm leading-relaxed" data-ghl-token="faq_answer_1">${v('faq_answer_1', 'Ons proces bestaat uit drie stappen: eerst verzamelen we klantverhalen via interviews, dan structureren we deze tot overtuigende cases, en tot slot presenteren we alles op een professionele landingspagina die converteert.')}</p>
+          </div>
+        </div>
+
+        <!-- FAQ Item 2 -->
+        <div class="faq-item bg-white/5 rounded-lg border border-white/10" data-ghl-container>
+          <button class="faq-question w-full flex justify-between items-center p-5 text-left" onclick="toggleFaq(this)">
+            <span class="text-white font-medium pr-4" data-ghl-token="faq_question_2">${v('faq_question_2', 'Wat is inbegrepen in het pakket?')}</span>
+            <svg class="faq-icon w-5 h-5 text-white/60 flex-shrink-0 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div class="faq-answer hidden px-5 pb-5">
+            <p class="text-white/70 text-sm leading-relaxed" data-ghl-token="faq_answer_2">${v('faq_answer_2', 'Je krijgt professionele video-interviews, geschreven testimonials, een volledig ingerichte landingspagina, en alle bestanden in hoge kwaliteit voor eigen gebruik.')}</p>
+          </div>
+        </div>
+
+        <!-- FAQ Item 3 -->
+        <div class="faq-item bg-white/5 rounded-lg border border-white/10" data-ghl-container>
+          <button class="faq-question w-full flex justify-between items-center p-5 text-left" onclick="toggleFaq(this)">
+            <span class="text-white font-medium pr-4" data-ghl-token="faq_question_3">${v('faq_question_3', 'Wat als mijn klanten niet willen meewerken?')}</span>
+            <svg class="faq-icon w-5 h-5 text-white/60 flex-shrink-0 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div class="faq-answer hidden px-5 pb-5">
+            <p class="text-white/70 text-sm leading-relaxed" data-ghl-token="faq_answer_3">${v('faq_answer_3', 'Wij helpen je met het benaderen van klanten en maken het proces zo makkelijk mogelijk. De meeste klanten zijn vereerd om gevraagd te worden en werken graag mee.')}</p>
+          </div>
+        </div>
+
+        <!-- FAQ Item 4 -->
+        <div class="faq-item bg-white/5 rounded-lg border border-white/10" data-ghl-container>
+          <button class="faq-question w-full flex justify-between items-center p-5 text-left" onclick="toggleFaq(this)">
+            <span class="text-white font-medium pr-4" data-ghl-token="faq_question_4">${v('faq_question_4', 'Hoeveel kost het en wat is de ROI?')}</span>
+            <svg class="faq-icon w-5 h-5 text-white/60 flex-shrink-0 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div class="faq-answer hidden px-5 pb-5">
+            <p class="text-white/70 text-sm leading-relaxed" data-ghl-token="faq_answer_4">${v('faq_answer_4', 'De investering varieert per pakket. De meeste klanten verdienen hun investering binnen 2-3 maanden terug door hogere conversies en meer vertrouwen bij prospects.')}</p>
+          </div>
+        </div>
+
+        <!-- FAQ Item 5 -->
+        <div class="faq-item bg-white/5 rounded-lg border border-white/10" data-ghl-container>
+          <button class="faq-question w-full flex justify-between items-center p-5 text-left" onclick="toggleFaq(this)">
+            <span class="text-white font-medium pr-4" data-ghl-token="faq_question_5">${v('faq_question_5', 'Hoe lang duurt het voordat alles klaar is?')}</span>
+            <svg class="faq-icon w-5 h-5 text-white/60 flex-shrink-0 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div class="faq-answer hidden px-5 pb-5">
+            <p class="text-white/70 text-sm leading-relaxed" data-ghl-token="faq_answer_5">${v('faq_answer_5', 'Gemiddeld is alles binnen 2-4 weken klaar, afhankelijk van de beschikbaarheid van je klanten voor interviews. Wij zorgen voor een soepele planning.')}</p>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -693,16 +1025,13 @@ ${videoCards}
   <!-- ================================================== -->
   <footer class="py-8 border-t border-white/10">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="flex justify-center items-center">
         <img
           src="${v('logo_url')}"
           alt="Logo"
           class="h-8"
           data-ghl-token="logo_url"
         >
-        <p class="text-white/40 text-sm">
-          © <span data-ghl-token="current_year">${v('current_year', '2025')}</span> <span data-ghl-token="company_name">${v('company_name', 'TESTIMOTION')}</span>. <span data-ghl-token="copyright_text">${v('copyright_text', 'Alle rechten voorbehouden.')}</span>
-        </p>
       </div>
     </div>
   </footer>
@@ -794,6 +1123,128 @@ ${videoCards}
         }
       });
     });
+
+    /**
+     * FAQ Accordion Functions
+     * Only one answer open at a time
+     */
+    function toggleFaq(button) {
+      const faqItem = button.closest('.faq-item');
+      const answer = faqItem.querySelector('.faq-answer');
+      const icon = faqItem.querySelector('.faq-icon');
+      const isOpen = !answer.classList.contains('hidden');
+
+      // Close all other FAQ items first
+      document.querySelectorAll('.faq-item').forEach(function(item) {
+        const otherAnswer = item.querySelector('.faq-answer');
+        const otherIcon = item.querySelector('.faq-icon');
+        if (otherAnswer && item !== faqItem) {
+          otherAnswer.classList.add('hidden');
+          if (otherIcon) otherIcon.style.transform = 'rotate(0deg)';
+        }
+      });
+
+      // Toggle current item
+      if (isOpen) {
+        answer.classList.add('hidden');
+        if (icon) icon.style.transform = 'rotate(0deg)';
+      } else {
+        answer.classList.remove('hidden');
+        if (icon) icon.style.transform = 'rotate(180deg)';
+      }
+    }
+
+    /**
+     * Reviews Slider Functions
+     */
+    (function initReviewsSlider() {
+      const slider = document.getElementById('reviewsSlider');
+      const prevBtn = document.getElementById('reviewsPrev');
+      const nextBtn = document.getElementById('reviewsNext');
+      const dotsContainer = document.getElementById('reviewsDots');
+
+      if (!slider || !prevBtn || !nextBtn || !dotsContainer) return;
+
+      const cards = slider.querySelectorAll('.google-review-card');
+      const totalCards = cards.length;
+
+      // Determine cards per view based on viewport
+      function getCardsPerView() {
+        if (window.innerWidth >= 1024) return 3;
+        if (window.innerWidth >= 768) return 2;
+        return 1;
+      }
+
+      let cardsPerView = getCardsPerView();
+      let totalPages = Math.ceil(totalCards / cardsPerView);
+      let currentPage = 0;
+
+      // Create dots
+      function createDots() {
+        dotsContainer.innerHTML = '';
+        for (let i = 0; i < totalPages; i++) {
+          const dot = document.createElement('button');
+          dot.className = 'reviews-slider-dot' + (i === currentPage ? ' active' : '');
+          dot.setAttribute('aria-label', 'Go to page ' + (i + 1));
+          dot.addEventListener('click', function() {
+            goToPage(i);
+          });
+          dotsContainer.appendChild(dot);
+        }
+      }
+
+      // Update active dot
+      function updateDots() {
+        const dots = dotsContainer.querySelectorAll('.reviews-slider-dot');
+        dots.forEach(function(dot, i) {
+          dot.classList.toggle('active', i === currentPage);
+        });
+      }
+
+      // Scroll to page
+      function goToPage(page) {
+        currentPage = Math.max(0, Math.min(page, totalPages - 1));
+        const cardWidth = cards[0].offsetWidth + 24; // card width + gap
+        slider.scrollTo({
+          left: currentPage * cardWidth * cardsPerView,
+          behavior: 'smooth'
+        });
+        updateDots();
+      }
+
+      // Event listeners
+      prevBtn.addEventListener('click', function() {
+        goToPage(currentPage - 1);
+      });
+
+      nextBtn.addEventListener('click', function() {
+        goToPage(currentPage + 1);
+      });
+
+      // Update on scroll (for touch/drag scrolling)
+      slider.addEventListener('scroll', function() {
+        const cardWidth = cards[0].offsetWidth + 24;
+        const newPage = Math.round(slider.scrollLeft / (cardWidth * cardsPerView));
+        if (newPage !== currentPage) {
+          currentPage = newPage;
+          updateDots();
+        }
+      });
+
+      // Handle resize
+      window.addEventListener('resize', function() {
+        const newCardsPerView = getCardsPerView();
+        if (newCardsPerView !== cardsPerView) {
+          cardsPerView = newCardsPerView;
+          totalPages = Math.ceil(totalCards / cardsPerView);
+          currentPage = Math.min(currentPage, totalPages - 1);
+          createDots();
+        }
+      });
+
+      // Initialize
+      createDots();
+    })();
 
     /**
      * Video Modal Functions
@@ -921,6 +1372,20 @@ ${videoCards}
       max-height: 500px;
     }
   </style>
+
+  <!-- Google Reviews Badge -->
+  ${v('google_reviews_url') ? `
+  <a href="${v('google_reviews_url')}" target="_blank" rel="noopener noreferrer" class="google-reviews-badge" data-section="google_reviews_badge">
+    <img src="https://www.google.com/images/branding/googleg/1x/googleg_standard_color_128dp.png" alt="Google" class="google-badge-logo">
+    <div class="google-badge-content">
+      <div class="google-badge-rating">
+        <span class="google-badge-rating-number" data-ghl-token="google_rating">${v('google_rating', '5.0')}</span>
+        <span class="google-badge-stars">★★★★★</span>
+      </div>
+      <span class="google-badge-count" data-ghl-token="google_review_count">${v('google_review_count', '35')} reviews on Google</span>
+    </div>
+  </a>
+  ` : ''}
 
 </body>
 </html>`;

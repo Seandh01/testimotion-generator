@@ -1,7 +1,12 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenAI } from '@google/genai';
 import * as cheerio from 'cheerio';
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+// Lazy-init to avoid crash before dotenv loads
+let ai = null;
+function getAI() {
+  if (!ai) ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+  return ai;
+}
 
 /**
  * Generate landing page copy using Gemini AI
@@ -92,7 +97,7 @@ async function extractBusinessContext(url) {
  * Generate copy using Gemini
  */
 async function generateCopyWithGemini(businessContext, userPrompt, language = 'nl') {
-  const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+  const ai = getAI();
 
   const langConfig = {
     nl: {
@@ -152,8 +157,11 @@ Make the copy:
 - ${lang.instruction}
 - Focused on how video testimonials will help THEIR customers trust them`;
 
-  const result = await model.generateContent(systemPrompt);
-  const text = result.response.text().trim();
+  const result = await ai.models.generateContent({
+    model: 'gemini-2.0-flash',
+    contents: systemPrompt
+  });
+  const text = result.text.trim();
 
   // Clean up any markdown formatting
   const cleanedText = text

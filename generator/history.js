@@ -1,40 +1,15 @@
-// History management module for TESTIMOTION Generator v3
-// Provides server-backed history with localStorage fallback
+// History management module for TESTIMOTION Generator v4
+// Uses Supabase for persistent storage with localStorage fallback
 
-const API_BASE = '/api/history';
+import { getSupabase, isSupabaseConfigured } from './supabase.js';
+import { getCurrentUser, isAuthenticated, getUserId } from './auth.js';
+
 const LOCAL_HISTORY_KEY = 'testimotion_history';
 
-// Generate a client ID based on URL or stored preference
-export function getClientId() {
-  // Check URL params first
-  const params = new URLSearchParams(window.location.search);
-  let clientId = params.get('clientId');
-
-  // Fallback to localStorage
-  if (!clientId) {
-    clientId = localStorage.getItem('testimotion_client_id');
-  }
-
-  // Generate new ID if none exists
-  if (!clientId) {
-    clientId = 'client-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-    localStorage.setItem('testimotion_client_id', clientId);
-  }
-
-  return clientId;
-}
-
-// Check if server is available
-async function isServerAvailable() {
-  try {
-    const response = await fetch('/api/health', { method: 'GET' });
-    return response.ok;
-  } catch {
-    return false;
-  }
-}
-
-// Get local history fallback
+/**
+ * Get local history fallback
+ * @returns {Object}
+ */
 function getLocalHistory() {
   const data = localStorage.getItem(LOCAL_HISTORY_KEY);
   if (data) {
@@ -47,33 +22,67 @@ function getLocalHistory() {
   return { versions: [] };
 }
 
-// Save local history fallback
+/**
+ * Save local history fallback
+ * @param {Object} history
+ */
 function saveLocalHistory(history) {
   localStorage.setItem(LOCAL_HISTORY_KEY, JSON.stringify(history));
 }
 
-// Fetch all versions for current client
+/**
+ * Fetch all versions for current user
+ * @returns {Promise<Object>}
+ */
 export async function fetchVersions() {
-  const clientId = getClientId();
-
-  if (await isServerAvailable()) {
-    try {
-      const response = await fetch(`${API_BASE}/${clientId}`);
-      if (response.ok) {
-        return await response.json();
-      }
-    } catch (err) {
-      console.warn('Server unavailable, using local storage:', err);
-    }
+  // If not authenticated or Supabase not configured, use localStorage
+  if (!isSupabaseConfigured() || !isAuthenticated()) {
+    return getLocalHistory();
   }
 
-  // Fallback to localStorage
-  return getLocalHistory();
+  const supabase = getSupabase();
+  const userId = getUserId();
+
+  if (!supabase || !userId) {
+    return getLocalHistory();
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('versions')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.error('Supabase fetch error:', error);
+      return getLocalHistory();
+    }
+
+    // Transform to expected format
+    return {
+      versions: (data || []).map(row => ({
+        id: row.id,
+        timestamp: row.created_at,
+        label: row.label,
+        values: row.values,
+        hidden: row.hidden || []
+      }))
+    };
+  } catch (err) {
+    console.error('Failed to fetch versions:', err);
+    return getLocalHistory();
+  }
 }
 
-// Save a new version
+/**
+ * Save a new version
+ * @param {string} label - Version label
+ * @param {Object} values - Form values
+ * @param {Array} hidden - Hidden field names
+ * @returns {Promise<Object>}
+ */
 export async function saveVersion(label, values, hidden) {
-  const clientId = getClientId();
   const version = {
     id: 'v-' + Date.now(),
     timestamp: new Date().toISOString(),
@@ -82,86 +91,201 @@ export async function saveVersion(label, values, hidden) {
     hidden
   };
 
-  if (await isServerAvailable()) {
-    try {
-      const response = await fetch(API_BASE, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clientId, label, values, hidden })
-      });
+  // If not authenticated or Supabase not configured, use localStorage
+  if (!isSupabaseConfigured() || !isAuthenticated()) {
+    const history = getLocalHistory();
+    history.versions.unshift(version);
 
-      if (response.ok) {
-        return await response.json();
-      }
-    } catch (err) {
-      console.warn('Server unavailable, saving locally:', err);
+    // Keep only last 20 versions locally
+    if (history.versions.length > 20) {
+      history.versions = history.versions.slice(0, 20);
     }
+
+    saveLocalHistory(history);
+    return version;
   }
 
-  // Fallback to localStorage
-  const history = getLocalHistory();
-  history.versions.unshift(version);
+  const supabase = getSupabase();
+  const userId = getUserId();
 
-  // Keep only last 20 versions locally
-  if (history.versions.length > 20) {
-    history.versions = history.versions.slice(0, 20);
+  if (!supabase || !userId) {
+    // Fallback to localStorage
+    const history = getLocalHistory();
+    history.versions.unshift(version);
+    if (history.versions.length > 20) {
+      history.versions = history.versions.slice(0, 20);
+    }
+    saveLocalHistory(history);
+    return version;
   }
 
-  saveLocalHistory(history);
-  return version;
+  try {
+    const { data, error } = await supabase
+      .from('versions')
+      .insert({
+        user_id: userId,
+        label: version.label,
+        values: values,
+        hidden: hidden || []
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Supabase insert error:', error);
+      // Fallback to localStorage
+      const history = getLocalHistory();
+      history.versions.unshift(version);
+      if (history.versions.length > 20) {
+        history.versions = history.versions.slice(0, 20);
+      }
+      saveLocalHistory(history);
+      return version;
+    }
+
+    // Return the created version
+    return {
+      id: data.id,
+      timestamp: data.created_at,
+      label: data.label,
+      values: data.values,
+      hidden: data.hidden || []
+    };
+  } catch (err) {
+    console.error('Failed to save version:', err);
+    // Fallback to localStorage
+    const history = getLocalHistory();
+    history.versions.unshift(version);
+    if (history.versions.length > 20) {
+      history.versions = history.versions.slice(0, 20);
+    }
+    saveLocalHistory(history);
+    return version;
+  }
 }
 
-// Load a specific version
+/**
+ * Load a specific version
+ * @param {string} versionId - Version ID
+ * @returns {Promise<Object|null>}
+ */
 export async function loadVersion(versionId) {
-  const clientId = getClientId();
-
-  if (await isServerAvailable()) {
-    try {
-      const response = await fetch(`${API_BASE}/${clientId}/${versionId}`);
-      if (response.ok) {
-        return await response.json();
-      }
-    } catch (err) {
-      console.warn('Server unavailable, loading from local storage:', err);
-    }
+  // If not authenticated or Supabase not configured, use localStorage
+  if (!isSupabaseConfigured() || !isAuthenticated()) {
+    const history = getLocalHistory();
+    return history.versions.find(v => v.id === versionId) || null;
   }
 
-  // Fallback to localStorage
-  const history = getLocalHistory();
-  return history.versions.find(v => v.id === versionId);
+  const supabase = getSupabase();
+  const userId = getUserId();
+
+  if (!supabase || !userId) {
+    const history = getLocalHistory();
+    return history.versions.find(v => v.id === versionId) || null;
+  }
+
+  try {
+    const { data, error } = await supabase
+      .from('versions')
+      .select('*')
+      .eq('id', versionId)
+      .eq('user_id', userId)
+      .single();
+
+    if (error) {
+      console.error('Supabase load error:', error);
+      // Try localStorage fallback
+      const history = getLocalHistory();
+      return history.versions.find(v => v.id === versionId) || null;
+    }
+
+    if (!data) return null;
+
+    return {
+      id: data.id,
+      timestamp: data.created_at,
+      label: data.label,
+      values: data.values,
+      hidden: data.hidden || []
+    };
+  } catch (err) {
+    console.error('Failed to load version:', err);
+    const history = getLocalHistory();
+    return history.versions.find(v => v.id === versionId) || null;
+  }
 }
 
-// Delete a version
+/**
+ * Delete a version
+ * @param {string} versionId - Version ID
+ * @returns {Promise<boolean>}
+ */
 export async function deleteVersion(versionId) {
-  const clientId = getClientId();
+  // If not authenticated or Supabase not configured, use localStorage
+  if (!isSupabaseConfigured() || !isAuthenticated()) {
+    const history = getLocalHistory();
+    const index = history.versions.findIndex(v => v.id === versionId);
+    if (index > -1) {
+      history.versions.splice(index, 1);
+      saveLocalHistory(history);
+      return true;
+    }
+    return false;
+  }
 
-  if (await isServerAvailable()) {
-    try {
-      const response = await fetch(`${API_BASE}/${clientId}/${versionId}`, {
-        method: 'DELETE'
-      });
+  const supabase = getSupabase();
+  const userId = getUserId();
 
-      if (response.ok) {
+  if (!supabase || !userId) {
+    const history = getLocalHistory();
+    const index = history.versions.findIndex(v => v.id === versionId);
+    if (index > -1) {
+      history.versions.splice(index, 1);
+      saveLocalHistory(history);
+      return true;
+    }
+    return false;
+  }
+
+  try {
+    const { error } = await supabase
+      .from('versions')
+      .delete()
+      .eq('id', versionId)
+      .eq('user_id', userId);
+
+    if (error) {
+      console.error('Supabase delete error:', error);
+      // Try localStorage fallback
+      const history = getLocalHistory();
+      const index = history.versions.findIndex(v => v.id === versionId);
+      if (index > -1) {
+        history.versions.splice(index, 1);
+        saveLocalHistory(history);
         return true;
       }
-    } catch (err) {
-      console.warn('Server unavailable, deleting from local storage:', err);
+      return false;
     }
-  }
 
-  // Fallback to localStorage
-  const history = getLocalHistory();
-  const index = history.versions.findIndex(v => v.id === versionId);
-  if (index > -1) {
-    history.versions.splice(index, 1);
-    saveLocalHistory(history);
     return true;
+  } catch (err) {
+    console.error('Failed to delete version:', err);
+    const history = getLocalHistory();
+    const index = history.versions.findIndex(v => v.id === versionId);
+    if (index > -1) {
+      history.versions.splice(index, 1);
+      saveLocalHistory(history);
+      return true;
+    }
+    return false;
   }
-
-  return false;
 }
 
-// Format timestamp for display
+/**
+ * Format timestamp for display
+ * @param {string} isoString - ISO timestamp string
+ * @returns {string}
+ */
 export function formatTimestamp(isoString) {
   const date = new Date(isoString);
   const now = new Date();
@@ -180,4 +304,55 @@ export function formatTimestamp(isoString) {
     day: 'numeric',
     year: date.getFullYear() !== now.getFullYear() ? 'numeric' : undefined
   });
+}
+
+/**
+ * Migrate local versions to Supabase (called after login)
+ * @returns {Promise<number>} Number of versions migrated
+ */
+export async function migrateLocalToSupabase() {
+  if (!isSupabaseConfigured() || !isAuthenticated()) {
+    return 0;
+  }
+
+  const supabase = getSupabase();
+  const userId = getUserId();
+
+  if (!supabase || !userId) {
+    return 0;
+  }
+
+  const localHistory = getLocalHistory();
+  if (!localHistory.versions || localHistory.versions.length === 0) {
+    return 0;
+  }
+
+  let migrated = 0;
+
+  for (const version of localHistory.versions) {
+    try {
+      const { error } = await supabase
+        .from('versions')
+        .insert({
+          user_id: userId,
+          label: version.label,
+          values: version.values,
+          hidden: version.hidden || [],
+          created_at: version.timestamp
+        });
+
+      if (!error) {
+        migrated++;
+      }
+    } catch (err) {
+      console.error('Migration error for version:', version.label, err);
+    }
+  }
+
+  // Clear local storage after successful migration
+  if (migrated > 0) {
+    localStorage.removeItem(LOCAL_HISTORY_KEY);
+  }
+
+  return migrated;
 }
