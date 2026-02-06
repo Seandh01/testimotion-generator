@@ -83,7 +83,7 @@ Return ONLY valid JSON with these fields:
 }`;
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-3-flash-preview',
       contents: copyPrompt
     });
 

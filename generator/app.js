@@ -702,12 +702,23 @@ async function extractBrand() {
   extractBtn.disabled = true;
   extractBtn.classList.add('loading');
   const originalText = extractBtn.innerHTML;
-  extractBtn.innerHTML = `
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-      <circle cx="12" cy="12" r="10"/>
-    </svg>
-    Extracting...
-  `;
+
+  const spinnerSvg = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/></svg>`;
+
+  const updateButtonText = (text) => {
+    extractBtn.innerHTML = `${spinnerSvg} ${text}`;
+  };
+
+  updateButtonText('Extracting...');
+
+  // Show retry status after delays (server retries every 5s)
+  let retryCount = 0;
+  const retryInterval = setInterval(() => {
+    retryCount++;
+    if (retryCount <= 3) {
+      updateButtonText(`Retrying... (${retryCount}/3)`);
+    }
+  }, 6000); // Slightly longer than server's 5s to account for network
 
   try {
     const response = await fetch('/api/extract-brand', {
@@ -715,6 +726,8 @@ async function extractBrand() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ url })
     });
+
+    clearInterval(retryInterval);
 
     if (!response.ok) {
       const error = await response.json();
@@ -724,10 +737,12 @@ async function extractBrand() {
     const brandData = await response.json();
     showExtractedBrand(brandData);
   } catch (err) {
+    clearInterval(retryInterval);
     console.error('Brand extraction error:', err);
     showToast(err.message || 'Failed to extract brand. Check the URL.', true);
   } finally {
     // Reset button state
+    clearInterval(retryInterval);
     extractBtn.disabled = false;
     extractBtn.classList.remove('loading');
     extractBtn.innerHTML = originalText;
